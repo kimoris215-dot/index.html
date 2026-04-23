@@ -3,53 +3,172 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NovelConsult</title>
+    <title>NovelConsult - Premium Writer Lab</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body { background-color: #0f172a; color: #f1f5f9; padding-bottom: 80px; }
-        .glass { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        body { background-color: #0f172a; color: #f1f5f9; padding-bottom: 90px; font-family: 'Segoe UI', sans-serif; }
+        .glass { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        .hidden-page { display: none; }
+        .nav-active { color: #818cf8; border-top: 3px solid #818cf8; }
+        .accent-bg { background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%); }
     </style>
 </head>
 <body>
-    <div id="home-page" class="p-4 max-w-xl mx-auto space-y-6">
-        <header class="text-center py-6">
-            <h1 class="text-3xl font-bold text-indigo-400">NovelConsult ✍️</h1>
+
+    <div id="home-page" class="p-4 md:p-8 max-w-2xl mx-auto space-y-6">
+        <header class="text-center py-4">
+            <h1 id="txt-header" class="text-3xl font-extrabold text-indigo-400 tracking-tight">NovelConsult ✍️</h1>
+            <p id="txt-subheader" class="text-slate-400 text-xs mt-1">Arsitek Cerita Digital Anda</p>
         </header>
 
-        <div class="glass p-6 rounded-3xl space-y-4">
-            <textarea id="user-idea" rows="3" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-4 text-sm text-white outline-none focus:border-indigo-500" placeholder="Masukkan ide cerita..."></textarea>
-            <select id="total-chapters" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-sm text-white">
-                <option value="5">5 Bab</option>
-                <option value="10">10 Bab</option>
-                <option value="20">20 Bab</option>
-            </select>
-            <button onclick="generate()" class="w-full bg-indigo-600 py-3 rounded-xl font-bold shadow-lg active:scale-95 transition-all">Buat Outline</button>
+        <div class="glass p-6 rounded-3xl space-y-5 shadow-2xl">
+            <div>
+                <label id="lbl-idea" class="block text-[10px] font-bold text-indigo-300 uppercase tracking-widest mb-2">Ide Cerita Utama</label>
+                <textarea id="user-idea" rows="3" class="w-full bg-slate-900 border border-slate-700 rounded-2xl p-4 text-sm outline-none focus:border-indigo-500 transition-all" placeholder="Contoh: Tentang persahabatan di sekolah bisnis..."></textarea>
+            </div>
+            
+            <div>
+                <label id="lbl-suggest" class="block text-[10px] font-bold text-indigo-300 uppercase tracking-widest mb-2">Saran / Mood Cerita</label>
+                <textarea id="user-suggestion" rows="2" class="w-full bg-slate-900 border border-slate-700 rounded-2xl p-4 text-sm outline-none focus:border-indigo-500 transition-all" placeholder="Contoh: Sedih, bahagia, atau penuh misteri..."></textarea>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+                <select id="total-chapters" class="bg-slate-900 border border-slate-700 rounded-xl p-3 text-sm outline-none">
+                    <option value="5">5 Bab (Cerpen)</option>
+                    <option value="10">10 Bab (Novelet)</option>
+                    <option value="20">20 Bab (Novel)</option>
+                </select>
+                <button onclick="generate()" id="btn-generate" class="accent-bg rounded-xl font-bold text-sm shadow-lg shadow-indigo-500/20 active:scale-95 transition-all">Buat Outline</button>
+            </div>
         </div>
 
-        <div id="result" class="hidden glass p-6 rounded-3xl space-y-4">
-            <h3 class="text-indigo-400 font-bold border-b border-slate-700 pb-2">Outline Novel Kamu:</h3>
-            <div id="display-chapters" class="space-y-3"></div>
+        <div id="result-section" class="hidden space-y-4">
+            <div class="flex justify-between items-center px-2">
+                <h3 id="lbl-result" class="text-sm font-bold text-indigo-300 uppercase">Draft Outline</h3>
+                <button onclick="copyResult()" class="text-[10px] bg-slate-700 px-3 py-1 rounded-full hover:bg-slate-600">Copy All</button>
+            </div>
+            
+            <div class="glass p-6 rounded-3xl space-y-6" id="final-content">
+                <div class="border-b border-slate-700 pb-4">
+                    <p class="text-xs text-indigo-400 font-bold mb-1 uppercase">Setting & Characters</p>
+                    <p id="display-setting" class="text-sm text-slate-300"></p>
+                </div>
+                <div id="display-chapters" class="space-y-4"></div>
+            </div>
         </div>
     </div>
 
+    <div id="profile-page" class="hidden-page p-4 md:p-8 max-w-2xl mx-auto">
+        <div class="glass p-8 rounded-3xl space-y-8 text-center shadow-2xl">
+            <div class="relative w-24 h-24 mx-auto">
+                <div class="w-24 h-24 bg-gradient-to-tr from-indigo-600 to-purple-500 rounded-full flex items-center justify-center text-4xl shadow-lg">✍️</div>
+                <div class="absolute bottom-0 right-0 w-7 h-7 bg-emerald-500 border-4 border-slate-900 rounded-full"></div>
+            </div>
+            
+            <div>
+                <h2 id="txt-prof-name" class="text-2xl font-bold">Penulis Digital</h2>
+                <p class="text-xs text-slate-500 tracking-widest mt-1 uppercase">ABI 16 Student</p>
+            </div>
+
+            <div class="space-y-4 text-left pt-4 border-t border-slate-800">
+                <label id="lbl-lang" class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest">Pengaturan Bahasa / Language</label>
+                <select id="lang-select" onchange="changeLanguage()" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-sm outline-none focus:border-indigo-500">
+                    <option value="id">Bahasa Indonesia</option>
+                    <option value="en">English</option>
+                </select>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+                <div class="p-4 bg-slate-800/50 rounded-2xl border border-slate-700">
+                    <p class="text-xl font-bold text-indigo-400">Pro</p>
+                    <p id="txt-stat-1" class="text-[9px] text-slate-500 uppercase">Status</p>
+                </div>
+                <div class="p-4 bg-slate-800/50 rounded-2xl border border-slate-700">
+                    <p class="text-xl font-bold text-indigo-400">∞</p>
+                    <p id="txt-stat-2" class="text-[9px] text-slate-500 uppercase">Ide Harian</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <nav class="fixed bottom-0 left-0 right-0 bg-slate-950/80 backdrop-blur-md border-t border-slate-800 flex justify-around items-center h-18 py-2 shadow-2xl z-50">
+        <button onclick="showPage('home')" id="nav-home" class="flex flex-col items-center w-full nav-active transition-all">
+            <span class="text-xl">🏠</span><span id="nav-lbl-home" class="text-[10px] mt-1 font-medium">Beranda</span>
+        </button>
+        <button onclick="showPage('profile')" id="nav-profile" class="flex flex-col items-center w-full text-slate-500 transition-all">
+            <span class="text-xl">👤</span><span id="nav-lbl-prof" class="text-[10px] mt-1 font-medium">Profil</span>
+        </button>
+    </nav>
+
     <script>
+        const content = {
+            id: {
+                header: "NovelConsult ✍️", sub: "Arsitek Cerita Digital Anda", idea: "Ide Cerita Utama",
+                suggest: "Saran / Mood Cerita", btn: "Buat Outline", result: "Draft Outline",
+                lang: "Pengaturan Bahasa", prof: "Profil", home: "Beranda", stat1: "Status",
+                stat2: "Ide Harian", alert: "Mohon isi ide ceritanya!", settingTxt: "Tokoh utama dan latar akan berfokus pada tema: "
+            },
+            en: {
+                header: "NovelConsult ✍️", sub: "Your Digital Story Architect", idea: "Main Story Idea",
+                suggest: "Suggestions / Story Mood", btn: "Generate Outline", result: "Draft Outline",
+                lang: "Language Settings", prof: "Profile", home: "Home", stat1: "Status",
+                stat2: "Daily Ideas", alert: "Please enter your story idea!", settingTxt: "Characters and setting will focus on theme: "
+            }
+        };
+
+        function showPage(page) {
+            document.getElementById('home-page').classList.toggle('hidden-page', page !== 'home');
+            document.getElementById('profile-page').classList.toggle('hidden-page', page !== 'profile');
+            document.getElementById('nav-home').classList.toggle('nav-active', page === 'home');
+            document.getElementById('nav-profile').classList.toggle('nav-active', page === 'profile');
+            if(page === 'home') document.getElementById('nav-profile').classList.add('text-slate-500');
+            else document.getElementById('nav-home').classList.add('text-slate-500');
+        }
+
+        function changeLanguage() {
+            const lang = document.getElementById('lang-select').value;
+            const t = content[lang];
+            document.getElementById('txt-header').innerText = t.header;
+            document.getElementById('txt-subheader').innerText = t.sub;
+            document.getElementById('lbl-idea').innerText = t.idea;
+            document.getElementById('lbl-suggest').innerText = t.suggest;
+            document.getElementById('btn-generate').innerText = t.btn;
+            document.getElementById('lbl-result').innerText = t.result;
+            document.getElementById('lbl-lang').innerText = t.lang;
+            document.getElementById('nav-lbl-home').innerText = t.home;
+            document.getElementById('nav-lbl-prof').innerText = t.prof;
+            document.getElementById('txt-stat-1').innerText = t.stat1;
+            document.getElementById('txt-stat-2').innerText = t.stat2;
+        }
+
         function generate() {
             const idea = document.getElementById('user-idea').value;
+            const suggestion = document.getElementById('user-suggestion').value;
             const count = document.getElementById('total-chapters').value;
-            if(!idea) return alert("Isi ide ceritanya dulu!");
+            const lang = document.getElementById('lang-select').value;
+
+            if(!idea) return alert(content[lang].alert);
+
+            document.getElementById('result-section').classList.remove('hidden');
+            document.getElementById('display-setting').innerText = content[lang].settingTxt + idea + ". Dengan nuansa: " + (suggestion || "Umum");
 
             const list = document.getElementById('display-chapters');
             list.innerHTML = "";
-            document.getElementById('result').classList.remove('hidden');
-
+            
             for(let i=1; i<=count; i++) {
                 const div = document.createElement('div');
-                div.className = "p-4 bg-slate-800/50 rounded-xl border-l-4 border-indigo-500";
-                div.innerHTML = `<h4 class="font-bold text-indigo-300 text-xs">BAB ${i}</h4>
-                                 <p class="text-sm text-slate-300 mt-1">Kejadian penting dan alur cerita untuk bab ${i} berdasarkan tema: ${idea.substring(0, 20)}...</p>`;
+                div.className = "p-4 bg-slate-800/40 rounded-2xl border-l-4 border-indigo-500";
+                div.innerHTML = `<h4 class="font-bold text-indigo-400 text-[10px] uppercase mb-1">Bab ${i}</h4>
+                                 <p class="text-xs text-slate-300 leading-relaxed">Pengembangan plot untuk bab ini akan mengeksplorasi konflik awal dan interaksi antar karakter utama berdasarkan ide: ${idea.substring(0, 30)}...</p>`;
                 list.appendChild(div);
             }
-            window.scrollTo({ top: document.getElementById('result').offsetTop, behavior: 'smooth' });
+            window.scrollTo({ top: document.getElementById('result-section').offsetTop, behavior: 'smooth' });
+        }
+
+        function copyResult() {
+            const text = document.getElementById('final-content').innerText;
+            navigator.clipboard.writeText(text);
+            alert("Outline copied to clipboard!");
         }
     </script>
 </body>
