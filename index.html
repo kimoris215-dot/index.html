@@ -3,82 +3,86 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NovelConsult - Deep Outline</title>
+    <title>NovelConsult Pro - Deep Architect</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body { background-color: #020617; color: #f1f5f9; padding-bottom: 100px; font-family: 'Inter', sans-serif; }
         .glass { background: rgba(15, 23, 42, 0.9); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.1); }
-        .hidden-page { display: none; }
-        .nav-active { color: #818cf8; }
         .accent-gradient { background: linear-gradient(135deg, #4f46e5 0%, #9333ea 100%); }
+        .chapter-card { cursor: pointer; transition: all 0.3s ease; border-left: 4px solid #334155; }
+        .chapter-card:hover { border-left-color: #6366f1; background: rgba(99, 102, 241, 0.05); }
+        .detail-content { max-height: 0; overflow: hidden; transition: max-height 0.4s ease-out; }
+        .detail-content.open { max-height: 1500px; margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid rgba(255,255,255,0.1); }
     </style>
 </head>
 <body>
 
-    <div id="home-page" class="p-4 md:p-8 max-w-2xl mx-auto space-y-6">
-        <header class="text-center py-4">
-            <h1 class="text-3xl font-black text-indigo-400 italic tracking-tighter">NOVELCONSULT ✍️</h1>
-            <p class="text-slate-500 text-[10px] tracking-[0.2em] uppercase">Detailed Story Architect</p>
+    <div class="p-4 md:p-8 max-w-3xl mx-auto space-y-6">
+        <header class="text-center py-6">
+            <h1 class="text-4xl font-black text-indigo-400 italic tracking-tighter uppercase">NovelConsult ✍️</h1>
+            <p class="text-slate-500 text-[10px] tracking-[0.3em] uppercase font-bold">Deep Narrative Architect - ABI 16</p>
         </header>
 
-        <div class="glass p-6 rounded-[2rem] space-y-5 shadow-2xl">
-            <textarea id="user-idea" rows="3" class="w-full bg-slate-950 border border-slate-800 rounded-2xl p-4 text-sm outline-none focus:border-indigo-500" placeholder="Jelaskan ide cerita kamu..."></textarea>
+        <div class="glass p-8 rounded-[2.5rem] space-y-6 shadow-2xl border-t border-white/5">
+            <div class="space-y-2">
+                <label class="text-[10px] font-black text-indigo-400 uppercase ml-2">Premis atau Ide Utama</label>
+                <textarea id="user-idea" rows="4" class="w-full bg-slate-950 border border-slate-800 rounded-2xl p-5 text-sm outline-none focus:border-indigo-500 transition-all leading-relaxed" placeholder="Contoh: Seorang mahasiswa menemukan pintu rahasia di rumah tua yang membawanya ke dunia fantasi penuh misteri..."></textarea>
+            </div>
             
-            <div class="grid grid-cols-2 gap-3">
-                <select id="total-chapters" class="bg-slate-950 border border-slate-800 rounded-xl p-3 text-sm outline-none">
-                    <option value="5">5 Bab (Singkat)</option>
-                    <option value="10">10 Bab (Sedang)</option>
-                    <option value="20">20 Bab (Panjang)</option>
-                </select>
-                <button onclick="generateNow()" class="accent-gradient rounded-xl font-bold text-sm shadow-lg py-3">GENERATE DETAIL</button>
+            <div class="grid grid-cols-2 gap-4">
+                <div class="space-y-2">
+                    <label class="text-[10px] font-black text-slate-500 uppercase ml-2">Durasi Cerita</label>
+                    <select id="total-chapters" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-4 text-sm outline-none">
+                        <option value="5">5 Bab (Flash Fiction)</option>
+                        <option value="10">10 Bab (Novelet)</option>
+                        <option value="20">20 Bab (Novel Lengkap)</option>
+                    </select>
+                </div>
+                <button onclick="generateDeepOutline()" class="accent-gradient rounded-2xl font-bold text-xs tracking-widest uppercase shadow-lg shadow-indigo-500/20 active:scale-95 transition-all mt-6">Generate Detail</button>
             </div>
         </div>
 
         <div id="result-section" class="hidden space-y-6">
-            <div class="glass p-6 rounded-[2rem] border-t-4 border-indigo-500">
-                <h2 class="text-indigo-400 font-bold text-sm mb-4">OUTLINE DETAIL</h2>
-                <div id="output-list" class="space-y-4 text-xs text-slate-300"></div>
+            <div class="flex justify-between items-center px-4">
+                <h3 class="text-xs font-black text-indigo-400 uppercase tracking-widest italic underline decoration-indigo-500 underline-offset-8">Master Plot & Character Bible</h3>
             </div>
+
+            <div id="display-chapters" class="space-y-5 pt-4"></div>
         </div>
     </div>
 
     <script>
-        function generateNow() {
+        function generateDeepOutline() {
             const idea = document.getElementById('user-idea').value;
-            const count = document.getElementById('total-chapters').value;
+            const count = parseInt(document.getElementById('total-chapters').value);
 
-            if(!idea) {
-                alert("Tulis dulu ide ceritanya!");
-                return;
-            }
+            if(!idea) return alert("Mohon deskripsikan ide cerita kamu agar rincian bisa dibuat!");
 
-            // Munculkan bagian hasil
             document.getElementById('result-section').classList.remove('hidden');
-            const list = document.getElementById('output-list');
+            const list = document.getElementById('display-chapters');
             list.innerHTML = "";
 
-            // Isi Identitas Sederhana
-            list.innerHTML += `
-                <div class="border-b border-slate-800 pb-4 mb-4">
-                    <p><b>Judul:</b> Petualangan Mahasiswa ABI 16</p>
-                    <p><b>Tema:</b> Fantasi & Misteri</p>
-                    <p><b>Latar:</b> Rumah tua dekat kampus</p>
-                </div>
-            `;
-
-            // Buat List Bab
             for(let i=1; i<=count; i++) {
-                list.innerHTML += `
-                    <div class="p-4 bg-slate-900/50 rounded-xl border border-slate-800">
-                        <p class="text-indigo-400 font-bold">BAB ${i}</p>
-                        <p class="mt-1">Fokus: Mengembangkan alur tentang "${idea.substring(0, 30)}..."</p>
-                    </div>
-                `;
-            }
+                let stage = i === 1 ? "ORIENTASI" : i === count ? "RESOLUSI" : i > count/2 ? "PUNCAK KONFLIK" : "AKSI MENINGKAT";
+                
+                const div = document.createElement('div');
+                div.className = "glass p-6 rounded-[2rem] chapter-card";
+                div.onclick = function() {
+                    const detail = this.querySelector('.detail-content');
+                    detail.classList.toggle('open');
+                    this.querySelector('.arrow-icon').classList.toggle('rotate-180');
+                };
 
-            // Scroll otomatis ke bawah
-            window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
-        }
-    </script>
-</body>
-</html>
+                div.innerHTML = `
+                    <div class="flex justify-between items-start">
+                        <div class="space-y-1">
+                            <span class="text-[9px] font-black text-indigo-500 uppercase tracking-[0.2em]">${stage}</span>
+                            <h4 class="font-bold text-lg tracking-tight">BAB ${i}: Langkah Menuju "${idea.substring(0, 15)}..."</h4>
+                        </div>
+                        <span class="arrow-icon transition-transform duration-300 text-slate-600 text-lg">▼</span>
+                    </div>
+                    
+                    <div class="detail-content text-sm text-slate-300 space-y-6">
+                        <div class="space-y-3">
+                            <h5 class="text-[10px] font-black text-purple-400 uppercase tracking-widest border-b border-purple-900/50 pb-1">Karakter dalam Bab Ini</h5>
+                            <div class="grid grid-cols-1 md:grid
