@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NovelConsult - Ultimate Architect</title>
+    <title>NovelConsult - Deep Outline</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body { background-color: #020617; color: #f1f5f9; padding-bottom: 100px; font-family: 'Inter', sans-serif; }
@@ -11,19 +11,18 @@
         .hidden-page { display: none; }
         .nav-active { color: #818cf8; }
         .accent-gradient { background: linear-gradient(135deg, #4f46e5 0%, #9333ea 100%); }
-        .card-inner { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.05); }
     </style>
 </head>
 <body>
 
     <div id="home-page" class="p-4 md:p-8 max-w-2xl mx-auto space-y-6">
         <header class="text-center py-4">
-            <h1 class="text-3xl font-black text-indigo-400 italic tracking-tighter uppercase">NovelConsult ✍️</h1>
+            <h1 class="text-3xl font-black text-indigo-400 italic tracking-tighter">NOVELCONSULT ✍️</h1>
             <p class="text-slate-500 text-[10px] tracking-[0.2em] uppercase">Detailed Story Architect</p>
         </header>
 
-        <div class="glass p-6 rounded-[2rem] space-y-5 shadow-2xl border-t border-white/10">
-            <textarea id="user-idea" rows="3" class="w-full bg-slate-950 border border-slate-800 rounded-2xl p-4 text-sm outline-none focus:border-indigo-500 transition-all" placeholder="Jelaskan ide cerita kamu selengkap mungkin..."></textarea>
+        <div class="glass p-6 rounded-[2rem] space-y-5 shadow-2xl">
+            <textarea id="user-idea" rows="3" class="w-full bg-slate-950 border border-slate-800 rounded-2xl p-4 text-sm outline-none focus:border-indigo-500" placeholder="Jelaskan ide cerita kamu..."></textarea>
             
             <div class="grid grid-cols-2 gap-3">
                 <select id="total-chapters" class="bg-slate-950 border border-slate-800 rounded-xl p-3 text-sm outline-none">
@@ -31,16 +30,55 @@
                     <option value="10">10 Bab (Sedang)</option>
                     <option value="20">20 Bab (Panjang)</option>
                 </select>
-                <button onclick="prosesGenerate()" class="accent-gradient rounded-xl font-bold text-sm shadow-lg active:scale-95 transition-all">GENERATE DETAIL</button>
+                <button onclick="generateNow()" class="accent-gradient rounded-xl font-bold text-sm shadow-lg py-3">GENERATE DETAIL</button>
             </div>
         </div>
 
         <div id="result-section" class="hidden space-y-6">
-            <div class="flex justify-between items-center px-2 pt-4">
-                <h3 class="text-xs font-bold text-indigo-400 uppercase tracking-widest">Master Outline Detail</h3>
-                <button onclick="copyAll()" class="text-[10px] bg-slate-800 px-4 py-1.5 rounded-full border border-slate-700">Copy Result</button>
+            <div class="glass p-6 rounded-[2rem] border-t-4 border-indigo-500">
+                <h2 class="text-indigo-400 font-bold text-sm mb-4">OUTLINE DETAIL</h2>
+                <div id="output-list" class="space-y-4 text-xs text-slate-300"></div>
             </div>
+        </div>
+    </div>
 
-            <div id="final-content" class="space-y-6">
-                <div class="glass p-6 rounded-[2rem] border-t-4 border-indigo-500">
-                    <h4 class="text-indigo-400 font-bold text-[10px] mb
+    <script>
+        function generateNow() {
+            const idea = document.getElementById('user-idea').value;
+            const count = document.getElementById('total-chapters').value;
+
+            if(!idea) {
+                alert("Tulis dulu ide ceritanya!");
+                return;
+            }
+
+            // Munculkan bagian hasil
+            document.getElementById('result-section').classList.remove('hidden');
+            const list = document.getElementById('output-list');
+            list.innerHTML = "";
+
+            // Isi Identitas Sederhana
+            list.innerHTML += `
+                <div class="border-b border-slate-800 pb-4 mb-4">
+                    <p><b>Judul:</b> Petualangan Mahasiswa ABI 16</p>
+                    <p><b>Tema:</b> Fantasi & Misteri</p>
+                    <p><b>Latar:</b> Rumah tua dekat kampus</p>
+                </div>
+            `;
+
+            // Buat List Bab
+            for(let i=1; i<=count; i++) {
+                list.innerHTML += `
+                    <div class="p-4 bg-slate-900/50 rounded-xl border border-slate-800">
+                        <p class="text-indigo-400 font-bold">BAB ${i}</p>
+                        <p class="mt-1">Fokus: Mengembangkan alur tentang "${idea.substring(0, 30)}..."</p>
+                    </div>
+                `;
+            }
+
+            // Scroll otomatis ke bawah
+            window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+        }
+    </script>
+</body>
+</html>
