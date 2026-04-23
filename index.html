@@ -1,180 +1,94 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>NovelConsult Pro</title>
-<link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,400;0,700;0,800;0,900;1,700&family=Righteous&display=swap" rel="stylesheet">
-<style>
-:root{--green:#7ED321;--purple:#6B21E8;--pl:#A855F7;--bg:#F0EDFA;--dark:#1a0a3b;}
-*{box-sizing:border-box;margin:0;padding:0;}
-body{background:var(--bg);font-family:'Nunito',sans-serif;min-height:100vh;overflow-x:hidden;}
-body::before{content:'';position:fixed;width:420px;height:420px;background:radial-gradient(circle,rgba(107,33,232,0.15),transparent 70%);border-radius:50%;top:-80px;right:-80px;pointer-events:none;z-index:0;}
-body::after{content:'';position:fixed;width:300px;height:300px;background:radial-gradient(circle,rgba(126,211,33,0.12),transparent 70%);border-radius:50%;bottom:60px;left:-60px;pointer-events:none;z-index:0;}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NovelConsult Pro</title>
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="NovelConsult">
+    
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&family=Righteous&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* CSS Tambahan untuk Fitur Baru */
+        :root {
+            --green: #7ED321; --purple: #6B21E8; --bg: #F0EDFA; --dark: #1a0a3b;
+        }
+        body { background: var(--bg); font-family: 'Nunito', sans-serif; }
+        
+        .profile-img-preview {
+            width: 80px; height: 80px; border-radius: 50%; object-fit: cover;
+            border: 4px solid var(--green); background: #eee;
+        }
+        
+        .history-item {
+            background: white; padding: 12px; border-radius: 12px; margin-bottom: 8px;
+            border-left: 4px solid var(--purple); cursor: pointer; transition: 0.2s;
+        }
+        .history-item:hover { transform: translateX(5px); background: #fdfbff; }
 
-.page{display:none;min-height:100vh;position:relative;z-index:1;}
-.page.active{display:flex;flex-direction:column;animation:popIn .35s cubic-bezier(.34,1.56,.64,1);}
-@keyframes popIn{from{opacity:0;transform:scale(.96) translateY(12px);}to{opacity:1;transform:scale(1) translateY(0);}}
-@keyframes floatUD{0%,100%{transform:translateY(0) rotate(-4deg);}50%{transform:translateY(-16px) rotate(4deg);}}
-@keyframes spin{to{transform:rotate(360deg);}}
-@keyframes bounce{0%,80%,100%{transform:scale(.6);opacity:.5;}40%{transform:scale(1.2);opacity:1;}}
-@keyframes pulse{0%,100%{transform:scale(1);}50%{transform:scale(1.06);}}
-
-nav{position:fixed;top:0;left:0;right:0;z-index:100;background:var(--purple);display:flex;align-items:center;justify-content:space-between;padding:0 1.25rem;height:58px;box-shadow:0 4px 20px rgba(107,33,232,.4);}
-.nav-logo{font-family:'Righteous',cursive;font-size:1.15rem;color:white;cursor:pointer;display:flex;align-items:center;gap:8px;}
-.nav-right{display:flex;align-items:center;gap:.6rem;}
-.lang-toggle{background:rgba(255,255,255,.15);border-radius:999px;display:flex;align-items:center;padding:3px;cursor:pointer;border:2px solid rgba(255,255,255,.25);}
-.lang-btn{padding:3px 10px;border-radius:999px;font-size:10px;font-weight:900;letter-spacing:.08em;transition:all .2s;color:rgba(255,255,255,.6);}
-.lang-btn.active{background:var(--green);color:var(--dark);}
-.profile-btn{width:36px;height:36px;border-radius:50%;overflow:hidden;border:3px solid rgba(255,255,255,.5);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:900;color:var(--dark);transition:transform .2s;background:var(--green);flex-shrink:0;}
-.profile-btn:hover{transform:scale(1.1) rotate(-5deg);}
-.profile-btn img{width:100%;height:100%;object-fit:cover;}
-
-.nav-icon-btn{background:rgba(255,255,255,.15);border:none;border-radius:999px;color:white;font-weight:900;font-size:.75rem;padding:5px 12px;cursor:pointer;display:flex;align-items:center;gap:4px;transition:background .2s;}
-.nav-icon-btn:hover{background:rgba(255,255,255,.25);}
-
-.card-purple{background:var(--purple);border-radius:2.5rem;color:white;box-shadow:0 8px 32px rgba(107,33,232,.3);}
-.card-green{background:var(--green);border-radius:2.5rem;color:var(--dark);box-shadow:0 8px 32px rgba(126,211,33,.35);}
-.card-white{background:white;border-radius:2.5rem;box-shadow:0 4px 20px rgba(107,33,232,.1);}
-
-textarea,select,input[type=text]{background:white;border:3px solid #E0D9F7;border-radius:1.25rem;padding:.9rem 1.1rem;font-family:'Nunito',sans-serif;font-size:.85rem;font-weight:700;color:var(--dark);width:100%;outline:none;transition:border-color .2s,box-shadow .2s;}
-textarea:focus,select:focus,input:focus{border-color:var(--pl);box-shadow:0 0 0 4px rgba(168,85,247,.15);}
-textarea::placeholder,input::placeholder{color:#C4B5E8;font-weight:700;}
-
-.btn-green{background:var(--green);color:var(--dark);border:none;border-radius:999px;font-family:'Nunito',sans-serif;font-weight:900;font-size:.9rem;padding:.9rem 1.75rem;cursor:pointer;transition:transform .15s,box-shadow .2s;box-shadow:0 4px 14px rgba(126,211,33,.5);display:inline-flex;align-items:center;gap:6px;width:100%;justify-content:center;}
-.btn-green:hover{transform:scale(1.03);box-shadow:0 6px 20px rgba(126,211,33,.6);}
-.btn-back{background:white;color:var(--purple);border:3px solid #E0D9F7;border-radius:999px;font-family:'Nunito',sans-serif;font-weight:900;font-size:.8rem;padding:6px 16px;cursor:pointer;transition:all .2s;}
-.btn-back:hover{background:#EDE9FA;}
-.btn-ai{background:var(--purple);color:white;border:none;border-radius:999px;font-family:'Nunito',sans-serif;font-weight:900;font-size:.75rem;padding:9px 18px;cursor:pointer;transition:all .2s;box-shadow:0 3px 10px rgba(107,33,232,.35);display:inline-flex;align-items:center;gap:5px;}
-.btn-ai:hover{transform:scale(1.05);}
-.btn-ai:disabled{opacity:.5;cursor:not-allowed;transform:none;}
-
-.chapter-card{background:white;border-radius:2rem;cursor:pointer;border:3px solid #E0D9F7;transition:all .25s;overflow:hidden;}
-.chapter-card:hover{border-color:var(--pl);box-shadow:0 6px 24px rgba(107,33,232,.15);}
-.chapter-card.open{border-color:var(--green);box-shadow:0 6px 24px rgba(126,211,33,.2);}
-.chapter-num-badge{background:var(--purple);color:white;border-radius:999px;font-size:9px;font-weight:900;padding:3px 10px;letter-spacing:.12em;text-transform:uppercase;display:inline-block;}
-.chapter-card.open .chapter-num-badge{background:var(--green);color:var(--dark);}
-
-.detail-content{display:none;margin-top:1rem;padding-top:1rem;border-top:2px dashed #E0D9F7;}
-.detail-content.open{display:block;animation:popIn .25s ease;}
-
-.pill-label{display:inline-block;font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:.2em;padding:4px 12px;border-radius:999px;margin-bottom:10px;}
-.pill-purple{background:var(--purple);color:white;}
-.pill-green{background:var(--green);color:var(--dark);}
-.pill-blue{background:#3B82F6;color:white;}
-.pill-orange{background:#F97316;color:white;}
-.pill-red{background:#EF4444;color:white;}
-.pill-teal{background:#14B8A6;color:white;}
-
-.blob-tag{background:rgba(255,255,255,.2);color:white;display:inline-block;padding:5px 16px;border-radius:0 999px 999px 999px;font-weight:900;font-size:.7rem;letter-spacing:.05em;margin-bottom:10px;}
-.blob-tag-purple{background:var(--purple);color:white;display:inline-block;padding:5px 16px;border-radius:0 999px 999px 999px;font-weight:900;font-size:.7rem;margin-bottom:10px;}
-.blob-tag-green{background:var(--green);color:var(--dark);display:inline-block;padding:6px 20px;border-radius:999px 0 999px 999px;font-weight:900;font-size:.72rem;}
-.star-deco{position:absolute;opacity:.2;pointer-events:none;color:white;}
-
-.ai-output{background:linear-gradient(135deg,#1a0a3b 0%,#2d1060 100%);border-radius:1.5rem;padding:1.1rem 1.25rem;margin-top:10px;border:2px solid rgba(126,211,33,.3);}
-.ai-label{font-size:9px;font-weight:900;color:var(--green);text-transform:uppercase;letter-spacing:.2em;margin-bottom:10px;display:flex;align-items:center;gap:6px;}
-.ai-point{background:rgba(255,255,255,.06);border-radius:.75rem;padding:10px 12px;margin-bottom:8px;color:#ddd6fe;font-size:.78rem;font-weight:700;line-height:1.7;border-left:3px solid var(--green);}
-.ai-point-title{font-size:9px;color:var(--green);font-weight:900;letter-spacing:.15em;text-transform:uppercase;margin-bottom:5px;}
-
-.spin{display:inline-block;width:12px;height:12px;border:2px solid rgba(255,255,255,.3);border-top-color:white;border-radius:50%;animation:spin .7s linear infinite;}
-.loading-dots span{display:inline-block;width:10px;height:10px;border-radius:50%;margin:0 3px;animation:bounce 1.2s infinite;}
-.loading-dots span:nth-child(1){background:var(--purple);}
-.loading-dots span:nth-child(2){background:var(--green);animation-delay:.2s;}
-.loading-dots span:nth-child(3){background:var(--purple);animation-delay:.4s;}
-
-label.field-label{display:block;font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:.2em;color:var(--purple);margin-bottom:8px;}
-.info-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;}
-.info-tag{background:#F5F3FF;color:var(--purple);border-radius:999px;font-size:10px;font-weight:900;padding:3px 12px;border:2px solid #E0D9F7;}
-.info-tag.green{background:#F0FDF0;color:#3D7A00;border-color:#BBF7D0;}
-.info-tag.blue{background:#EFF6FF;color:#1D4ED8;border-color:#BFDBFE;}
-.info-tag.orange{background:#FFF7ED;color:#C2410C;border-color:#FED7AA;}
-
-.modal-overlay{display:none;position:fixed;inset:0;z-index:200;background:rgba(26,10,59,.65);backdrop-filter:blur(6px);align-items:flex-end;justify-content:center;}
-.modal-overlay.open{display:flex;animation:popIn .2s ease;}
-.modal-box{background:white;border-radius:2.5rem 2.5rem 0 0;padding:1.75rem 1.75rem 2.5rem;width:100%;max-width:440px;box-shadow:0 -20px 60px rgba(107,33,232,.35);border:3px solid #E0D9F7;display:flex;flex-direction:column;gap:1.1rem;max-height:90vh;overflow-y:auto;}
-.modal-box-center{border-radius:2.5rem;max-height:85vh;}
-
-.synopsis-block{background:linear-gradient(135deg,#F5F3FF,#EDE9FA);border-radius:1rem;padding:13px 15px;font-size:.79rem;font-weight:700;color:var(--dark);line-height:1.8;border-left:4px solid var(--purple);margin-bottom:10px;}
-.detail-event{background:#FAF5FF;border-radius:1rem;padding:10px 13px;font-size:.78rem;font-weight:700;color:var(--dark);line-height:1.7;margin-bottom:7px;border-left:3px solid #C4B5E8;}
-.setting-block{background:linear-gradient(135deg,#EFF6FF,#DBEAFE);border-radius:1rem;padding:13px 15px;font-size:.79rem;font-weight:700;color:#1e3a5f;line-height:1.85;border-left:4px solid #3B82F6;margin-bottom:8px;}
-.setting-row{display:flex;gap:8px;margin-bottom:8px;align-items:flex-start;}
-.setting-icon{font-size:1.2rem;flex-shrink:0;margin-top:2px;}
-.setting-text{font-size:.78rem;font-weight:700;color:#1e3a5f;line-height:1.7;}
-.setting-label{font-size:8px;font-weight:900;text-transform:uppercase;letter-spacing:.2em;color:#3B82F6;margin-bottom:3px;}
-
-/* History */
-.hist-item{background:white;border-radius:1.5rem;padding:1rem 1.1rem;border:2.5px solid #E0D9F7;display:flex;align-items:center;gap:12px;cursor:pointer;transition:all .2s;}
-.hist-item:hover{border-color:var(--pl);box-shadow:0 4px 14px rgba(107,33,232,.12);}
-.hist-genre-badge{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0;}
-
-/* SVG character floaters */
-.char-float{position:fixed;pointer-events:none;z-index:0;animation:floatUD 4s ease-in-out infinite;}
-.char-float:nth-child(2){animation-delay:.7s;animation-duration:5s;}
-.char-float:nth-child(3){animation-delay:1.5s;animation-duration:3.8s;}
-.char-float:nth-child(4){animation-delay:2.2s;animation-duration:4.8s;}
-.char-float:nth-child(5){animation-delay:.3s;animation-duration:5.5s;}
-.char-float:nth-child(6){animation-delay:1.1s;animation-duration:4.2s;}
-
-/* Character row */
-.char-bubble{display:flex;align-items:center;justify-content:center;border-radius:50%;border:3px solid white;box-shadow:0 4px 12px rgba(0,0,0,.12);animation:floatUD 3s ease-in-out infinite;overflow:visible;}
-
-.photo-upload-area{border:3px dashed #C4B5E8;border-radius:50%;width:90px;height:90px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .2s;overflow:hidden;position:relative;background:#F5F3FF;margin:0 auto;}
-.photo-upload-area:hover{border-color:var(--purple);background:#EDE9FA;}
-.photo-upload-area img{width:100%;height:100%;object-fit:cover;border-radius:50%;}
-</style>
+        .setting-detail-box {
+            background: #f8faff; border: 1px solid #e0e7ff; border-radius: 15px;
+            padding: 15px; margin-top: 10px; line-height: 1.6; font-size: 0.85rem;
+        }
+        
+        .char-box {
+            border: 2px solid #e2e8f0; border-radius: 12px; padding: 10px; margin-bottom: 8px;
+        }
+        
+        .install-banner {
+            display: none; background: var(--dark); color: white; padding: 10px;
+            position: fixed; bottom: 20px; left: 20px; right: 20px; z-index: 1000;
+            border-radius: 15px; align-items: center; justify-content: space-between;
+        }
+    </style>
 </head>
 <body>
 
-<!-- SVG Floating Characters (Inside Out style drawn in SVG) -->
-<!-- Joy -->
-<div class="char-float" style="top:12%;left:2%;opacity:.22;width:56px;">
-<svg viewBox="0 0 80 120" xmlns="http://www.w3.org/2000/svg">
-  <ellipse cx="40" cy="65" rx="26" ry="32" fill="#FFD700"/>
-  <ellipse cx="40" cy="40" rx="22" ry="24" fill="#FFE44D"/>
-  <circle cx="32" cy="36" r="4" fill="white"/><circle cx="48" cy="36" r="4" fill="white"/>
-  <circle cx="33" cy="37" r="2.5" fill="#1a60c8"/><circle cx="49" cy="37" r="2.5" fill="#1a60c8"/>
-  <path d="M32 48 Q40 55 48 48" stroke="#1a60c8" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-  <ellipse cx="40" cy="10" rx="18" ry="12" fill="#60B0FF"/>
-  <path d="M22 10 Q40 0 58 10" fill="#60B0FF"/>
-  <rect x="28" y="62" width="24" height="28" rx="8" fill="#FFFAD0"/>
-  <ellipse cx="25" cy="72" rx="7" ry="5" fill="#FFE44D"/>
-  <ellipse cx="55" cy="72" rx="7" ry="5" fill="#FFE44D"/>
-  <ellipse cx="30" cy="104" rx="8" ry="10" fill="#FFD700"/>
-  <ellipse cx="50" cy="104" rx="8" ry="10" fill="#FFD700"/>
-</svg>
+<nav class="bg-[#6B21E8] text-white p-3 flex justify-between items-center fixed top-0 w-full z-50 shadow-lg">
+    <div class="font-['Righteous'] text-xl" onclick="goHome()">✍️ NovelConsult</div>
+    <div class="flex items-center gap-3">
+        <button onclick="showHistory()" class="text-xs font-bold bg-white/20 px-3 py-1 rounded-full">🕒 Histori</button>
+        <div id="nav-profile-img" onclick="openProfile()" class="w-9 h-9 rounded-full bg-green-400 border-2 border-white overflow-hidden cursor-pointer flex items-center justify-center font-bold text-dark">
+            ?
+        </div>
+    </div>
+</nav>
+
+<div id="install-banner" class="install-banner">
+    <span class="text-xs font-bold">Simpan di Layar Utama?</span>
+    <button onclick="installApp()" class="bg-green-500 text-dark px-4 py-1 rounded-full text-xs font-black">Install</button>
 </div>
 
-<!-- Anger -->
-<div class="char-float" style="top:38%;right:3%;opacity:.2;width:50px;">
-<svg viewBox="0 0 80 110" xmlns="http://www.w3.org/2000/svg">
-  <rect x="12" y="40" width="56" height="50" rx="14" fill="#E53E3E"/>
-  <rect x="20" y="20" width="40" height="36" rx="10" fill="#FC4444"/>
-  <rect x="14" y="16" width="14" height="6" rx="3" fill="#FF8C00" transform="rotate(-20 21 19)"/>
-  <rect x="52" y="16" width="14" height="6" rx="3" fill="#FF8C00" transform="rotate(20 59 19)"/>
-  <rect x="28" y="28" width="8" height="5" rx="2" fill="white"/><rect x="44" y="28" width="8" height="5" rx="2" fill="white"/>
-  <rect x="29" y="29" width="5" height="3" rx="1" fill="#1a0a3b"/><rect x="45" y="29" width="5" height="3" rx="1" fill="#1a0a3b"/>
-  <path d="M28 41 Q40 36 52 41" stroke="#1a0a3b" stroke-width="2.5" fill="none"/>
-  <rect x="22" y="14" width="36" height="4" rx="2" fill="#CC3300" transform="rotate(-8 40 16)"/>
-  <!-- fire top -->
-  <ellipse cx="40" cy="8" rx="8" ry="10" fill="#FF8C00" opacity=".9"/>
-  <ellipse cx="40" cy="5" rx="5" ry="7" fill="#FFD700" opacity=".9"/>
-  <rect x="28" y="72" width="24" height="20" rx="8" fill="#C53030"/>
-  <ellipse cx="22" cy="80" rx="7" ry="5" fill="#E53E3E"/>
-  <ellipse cx="58" cy="80" rx="7" ry="5" fill="#E53E3E"/>
-  <ellipse cx="28" cy="96" rx="8" ry="9" fill="#E53E3E"/>
-  <ellipse cx="52" cy="96" rx="8" ry="9" fill="#E53E3E"/>
-</svg>
+<div id="page-home" class="pt-20 px-4 max-w-md mx-auto flex flex-col gap-5">
+    <div class="bg-[#6B21E8] p-6 rounded-[2.5rem] text-white shadow-xl">
+        <h1 class="font-['Righteous'] text-3xl">Mulai Menulis</h1>
+        <p class="text-sm opacity-80">Rancang dunia fantasimu hari ini.</p>
+    </div>
+
+    <div class="bg-white p-5 rounded-[2.5rem] shadow-sm flex flex-col gap-4">
+        <textarea id="user-idea" class="w-full border-2 border-purple-100 rounded-2xl p-4 text-sm font-bold focus:border-purple-400 outline-none" rows="4" placeholder="Apa premis ceritamu hari ini?"></textarea>
+        <select id="genre-select" class="w-full border-2 border-purple-100 rounded-xl p-3 text-sm font-bold">
+            <option value="Fantasi">🧙 Fantasi</option>
+            <option value="Romansa">💕 Romansa</option>
+            <option value="Misteri">🕵️ Misteri</option>
+        </select>
+        <button onclick="generateOutline()" class="bg-[#7ED321] text-dark font-black py-4 rounded-full shadow-lg active:scale-95 transition">⚡ BANGUN OUTLINE</button>
+    </div>
 </div>
 
-<!-- Sadness -->
-<div class="char-float" style="top:65%;left:3%;opacity:.2;width:52px;">
-<svg viewBox="0 0 80 120" xmlns="http://www.w3.org/2000/svg">
-  <ellipse cx="40" cy="70" rx="24" ry="30" fill="#5B9BD5"/>
-  <ellipse cx="40" cy="42" rx="22" ry="24" fill="#73B0E8"/>
-  <!-- glasses -->
-  <circle cx="33" cy="40" r="9" fill="none" stroke="#1a3a5e" stroke-width="2.5"/>
-  <circle cx="51" cy="40" r="9" fill="none" stroke="#1a3a5e" stroke-width="2.5"/>
-  <line x1="42" y1="40" x2="42" y2="40" stroke="#1a3a5e" stroke-width="2.5"/>
-  <circle cx="33" cy="40" r="6" fill="white" opacity=".7"/>
-  <circle cx="51" cy="40" r="6" fill="white" opacity=".7"/>
-  
+<div id="page-history" class="hidden pt-20 px-4 max-w-md mx-auto">
+    <div class="flex justify-between items-center mb-5">
+        <h2 class="font-['Righteous'] text-2xl text-purple-900">Histori Cerita</h2>
+        <button onclick="goHome()" class="text-sm font-bold text-purple-600">Tutup</button>
+    </div>
+    <div id="history-list"></div>
+</div>
+
+<div id="page-result" class="hidden pt-20 px-4 pb-20 max-w-md mx-auto">
+    <button onclick="goHome()" class="mb-4 font-bold text-purple-600">← Kembali</button>
+    <div id="display-chapters" class="flex flex-col gap-4"></div>
+</div>
+
+<div id="profile-modal" class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-[100]
