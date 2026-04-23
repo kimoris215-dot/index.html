@@ -3,36 +3,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NovelConsult Pro Fix</title>
+    <title>NovelConsult Pro - Deep Outline</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body { background-color: #020617; color: #f1f5f9; font-family: 'Inter', sans-serif; margin: 0; display: flex; height: 100vh; overflow: hidden; }
-        .sidebar { background: #0f172a; border-right: 1px solid #1e293b; width: 250px; flex-shrink: 0; display: flex; flex-direction: column; transition: 0.3s; }
-        .main-content { flex-grow: 1; overflow-y: auto; padding: 2rem; }
-        .glass { background: rgba(30, 41, 59, 0.5); backdrop-filter: blur(8px); border: 1px solid rgba(255, 255, 255, 0.05); }
-        .nav-btn { width: 100%; display: flex; align-items: center; padding: 1rem; color: #94a3b8; transition: 0.2s; border-left: 4px solid transparent; }
-        .nav-btn:hover { background: #1e293b; color: white; }
-        .nav-btn.active { background: #1e1b4b; color: #818cf8; border-left: 4px solid #818cf8; }
-        .page-section { display: none; }
-        .page-section.active { display: block; }
-        
-        /* Responisvitas untuk HP */
-        @media (max-width: 768px) {
-            .sidebar { width: 70px; }
-            .nav-text { display: none; }
-            .sidebar h1 { display: none; }
-        }
+        body { background-color: #020617; color: #f1f5f9; font-family: 'Inter', sans-serif; min-height: 100vh; }
+        .glass { background: rgba(30, 41, 59, 0.4); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.05); }
+        .accent-gradient { background: linear-gradient(135deg, #4f46e5 0%, #9333ea 100%); }
+        .chapter-card { border-left: 4px solid #6366f1; transition: transform 0.2s; }
+        .chapter-card:hover { transform: translateX(5px); background: rgba(49, 46, 129, 0.2); }
     </style>
 </head>
-<body>
+<body class="p-4 md:p-10">
 
-    <div class="sidebar">
-        <div class="p-6 border-b border-slate-800">
-            <h1 class="font-black text-indigo-400 tracking-tighter text-xl">NOVEL PRO</h1>
-        </div>
-        <nav class="mt-4 flex-grow">
-            <button onclick="changeTab('home')" id="tab-home" class="nav-btn active">
-                <span class="text-xl">🏠</span> <span class="nav-text ml-3 font-bold text-sm">Beranda</span>
-            </button>
-            <button onclick="changeTab('char')" id="tab-char" class="nav-btn">
-                <span class="text-xl">👥</span> <span class="nav
+    <div class="max-w-4xl mx-auto space-y-8">
+        <header class="text-center space-y-2">
+            <h1 class="text-4xl font-black text-indigo-400 tracking-tighter italic uppercase">NovelConsult ✍️</h1>
+            <p class="text-slate-500 text-xs tracking-widest uppercase font-bold">Premium Story Architect - ABI 16 Station</p>
+        </header>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="md:col-span-1 space-y-4">
+                <div class="glass p-6 rounded-[2rem] shadow-2xl">
+                    <h3 class="text-[10px] font-bold text-indigo-400 uppercase mb-4 tracking-widest">Inti Cerita</h3>
+                    <div class="space-y-4">
+                        <textarea id="input-ide" rows="5" class="w-full bg-slate-950 border border-slate-800 rounded-2xl p-4 text-sm outline-none focus:border-indigo-500 transition-all" placeholder="Jelaskan premis novelmu..."></textarea>
+                        
+                        <div>
+                            <label class="text-[10px] text-slate-500 font-bold mb-2 block uppercase">Jumlah Bab</label>
+                            <select id="input-bab" class="w-full bg-slate-95
