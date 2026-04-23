@@ -3,53 +3,54 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NovelConsult - Lab Penulis</title>
+    <title>NovelConsult</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body { background-color: #0f172a; color: #f1f5f9; padding-bottom: 80px; }
-        .glass { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.1); }
-        .hidden-page { display: none; }
-        .nav-active { color: #818cf8; border-top: 3px solid #818cf8; }
+        .glass { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); }
     </style>
 </head>
 <body>
-
-    <div id="home-page" class="p-4 md:p-8 max-w-2xl mx-auto space-y-6">
+    <div id="home-page" class="p-4 max-w-xl mx-auto space-y-6">
         <header class="text-center py-6">
-            <h1 id="title" class="text-3xl font-extrabold text-indigo-400">NovelConsult ✍️</h1>
-            <p id="subtitle" class="text-slate-400 text-sm">Rancang mahakaryamu di sini</p>
+            <h1 class="text-3xl font-bold text-indigo-400">NovelConsult ✍️</h1>
         </header>
 
-        <div class="glass p-6 rounded-3xl space-y-4 shadow-2xl">
-            <div>
-                <label id="lbl-idea" class="block text-xs font-bold text-indigo-300 uppercase mb-2">Ide Cerita</label>
-                <textarea id="user-idea" rows="3" class="w-full bg-slate-900 border border-slate-700 rounded-2xl p-4 text-sm outline-none focus:border-indigo-500" placeholder="Masukkan ide dasar..."></textarea>
-            </div>
-            
-            <div>
-                <label id="lbl-suggest" class="block text-xs font-bold text-indigo-300 uppercase mb-2">Saran Tambahan</label>
-                <textarea id="user-suggestion" rows="2" class="w-full bg-slate-900 border border-slate-700 rounded-2xl p-4 text-sm outline-none focus:border-indigo-500" placeholder="Ingin alur seperti apa?"></textarea>
-            </div>
-
-            <div class="grid grid-cols-2 gap-4">
-                <select id="total-chapters" class="bg-slate-900 border border-slate-700 rounded-xl p-3 text-sm">
-                    <option value="5">5 Bab</option>
-                    <option value="10">10 Bab</option>
-                    <option value="20">20 Bab</option>
-                </select>
-                <button onclick="generate()" id="btn-gen" class="bg-indigo-600 rounded-xl font-bold text-sm hover:bg-indigo-700 transition-all">Buat Outline</button>
-            </div>
+        <div class="glass p-6 rounded-3xl space-y-4">
+            <textarea id="user-idea" rows="3" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-4 text-sm text-white outline-none focus:border-indigo-500" placeholder="Masukkan ide cerita..."></textarea>
+            <select id="total-chapters" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-sm text-white">
+                <option value="5">5 Bab</option>
+                <option value="10">10 Bab</option>
+                <option value="20">20 Bab</option>
+            </select>
+            <button onclick="generate()" class="w-full bg-indigo-600 py-3 rounded-xl font-bold shadow-lg active:scale-95 transition-all">Buat Outline</button>
         </div>
 
-        <div id="result" class="hidden glass p-6 rounded-3xl space-y-6">
-            <div class="border-b border-slate-700 pb-4">
-                <h3 id="res-setting" class="text-indigo-400 font-bold mb-1">Latar & Dunia</h3>
-                <p id="display-setting" class="text-sm text-slate-300 italic"></p>
-            </div>
-            <div id="display-chapters" class="space-y-4"></div>
+        <div id="result" class="hidden glass p-6 rounded-3xl space-y-4">
+            <h3 class="text-indigo-400 font-bold border-b border-slate-700 pb-2">Outline Novel Kamu:</h3>
+            <div id="display-chapters" class="space-y-3"></div>
         </div>
     </div>
 
-    <div id="profile-page" class="hidden-page p-4 md:p-8 max-w-2xl mx-auto">
-        <div class="glass p-8 rounded-3xl space
+    <script>
+        function generate() {
+            const idea = document.getElementById('user-idea').value;
+            const count = document.getElementById('total-chapters').value;
+            if(!idea) return alert("Isi ide ceritanya dulu!");
 
+            const list = document.getElementById('display-chapters');
+            list.innerHTML = "";
+            document.getElementById('result').classList.remove('hidden');
+
+            for(let i=1; i<=count; i++) {
+                const div = document.createElement('div');
+                div.className = "p-4 bg-slate-800/50 rounded-xl border-l-4 border-indigo-500";
+                div.innerHTML = `<h4 class="font-bold text-indigo-300 text-xs">BAB ${i}</h4>
+                                 <p class="text-sm text-slate-300 mt-1">Kejadian penting dan alur cerita untuk bab ${i} berdasarkan tema: ${idea.substring(0, 20)}...</p>`;
+                list.appendChild(div);
+            }
+            window.scrollTo({ top: document.getElementById('result').offsetTop, behavior: 'smooth' });
+        }
+    </script>
+</body>
+</html>
