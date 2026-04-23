@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NovelConsult - Ultimate Detail</title>
+    <title>NovelConsult - Ultimate Architect</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body { background-color: #020617; color: #f1f5f9; padding-bottom: 100px; font-family: 'Inter', sans-serif; }
@@ -18,12 +18,12 @@
 
     <div id="home-page" class="p-4 md:p-8 max-w-2xl mx-auto space-y-6">
         <header class="text-center py-4">
-            <h1 class="text-3xl font-black text-indigo-400 italic tracking-tighter">NovelConsult DEEP ✍️</h1>
+            <h1 class="text-3xl font-black text-indigo-400 italic tracking-tighter uppercase">NovelConsult ✍️</h1>
             <p class="text-slate-500 text-[10px] tracking-[0.2em] uppercase">Detailed Story Architect</p>
         </header>
 
-        <div class="glass p-6 rounded-[2rem] space-y-5 shadow-2xl">
-            <textarea id="user-idea" rows="3" class="w-full bg-slate-950 border border-slate-800 rounded-2xl p-4 text-sm outline-none focus:border-indigo-500" placeholder="Jelaskan ide cerita kamu selengkap mungkin..."></textarea>
+        <div class="glass p-6 rounded-[2rem] space-y-5 shadow-2xl border-t border-white/10">
+            <textarea id="user-idea" rows="3" class="w-full bg-slate-950 border border-slate-800 rounded-2xl p-4 text-sm outline-none focus:border-indigo-500 transition-all" placeholder="Jelaskan ide cerita kamu selengkap mungkin..."></textarea>
             
             <div class="grid grid-cols-2 gap-3">
                 <select id="total-chapters" class="bg-slate-950 border border-slate-800 rounded-xl p-3 text-sm outline-none">
@@ -36,11 +36,15 @@
         </div>
 
         <div id="result-section" class="hidden space-y-6">
-            <div class="flex justify-between items-center px-2">
-                <h3 class="text-xs font-bold text-indigo-400 uppercase tracking-widest">Master Document Detail</h3>
+            <div class="flex justify-between items-center px-2 pt-4">
+                <h3 class="text-xs font-bold text-indigo-400 uppercase tracking-widest">Master Outline Detail</h3>
                 <button onclick="copyAll()" class="text-[10px] bg-slate-800 px-4 py-1.5 rounded-full border border-slate-700">Copy Result</button>
             </div>
 
             <div id="final-content" class="space-y-6">
                 <div class="glass p-6 rounded-[2rem] border-t-4 border-indigo-500">
-                    <h4 class="
+                    <h4 class="text-indigo-400 font-bold text-[10px] mb-4 uppercase tracking-[0.2em]">I. Identitas & Karakter</h4>
+                    <div id="display-identity" class="text-xs text-slate-300 leading-relaxed space-y-3"></div>
+                </div>
+
+                
