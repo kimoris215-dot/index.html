@@ -1,482 +1,180 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NovelConsult Pro - ABI 16</title>
-    <link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,400;0,700;0,800;0,900;1,700&family=Righteous&display=swap" rel="stylesheet">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        :root {
-            --green: #7ED321;
-            --purple: #6B21E8;
-            --purple-light: #A855F7;
-            --bg: #F0EDFA;
-            --dark: #1a0a3b;
-        }
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { background: var(--bg); font-family: 'Nunito', sans-serif; min-height: 100vh; overflow-x: hidden; }
-        body::before {
-            content: ''; position: fixed; width: 420px; height: 420px;
-            background: radial-gradient(circle, rgba(107,33,232,0.18), transparent 70%);
-            border-radius: 50%; top: -80px; right: -80px; pointer-events: none; z-index: 0;
-        }
-        body::after {
-            content: ''; position: fixed; width: 300px; height: 300px;
-            background: radial-gradient(circle, rgba(126,211,33,0.15), transparent 70%);
-            border-radius: 50%; bottom: 60px; left: -60px; pointer-events: none; z-index: 0;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NovelConsult Pro</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,400;0,700;0,800;0,900;1,700&family=Righteous&display=swap" rel="stylesheet">
+<style>
+:root{--green:#7ED321;--purple:#6B21E8;--pl:#A855F7;--bg:#F0EDFA;--dark:#1a0a3b;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);font-family:'Nunito',sans-serif;min-height:100vh;overflow-x:hidden;}
+body::before{content:'';position:fixed;width:420px;height:420px;background:radial-gradient(circle,rgba(107,33,232,0.15),transparent 70%);border-radius:50%;top:-80px;right:-80px;pointer-events:none;z-index:0;}
+body::after{content:'';position:fixed;width:300px;height:300px;background:radial-gradient(circle,rgba(126,211,33,0.12),transparent 70%);border-radius:50%;bottom:60px;left:-60px;pointer-events:none;z-index:0;}
 
-        .page { display: none; min-height: 100vh; position: relative; z-index: 1; }
-        .page.active { display: flex; flex-direction: column; animation: popIn 0.35s cubic-bezier(.34,1.56,.64,1); }
-        @keyframes popIn {
-            from { opacity: 0; transform: scale(0.96) translateY(12px); }
-            to   { opacity: 1; transform: scale(1) translateY(0); }
-        }
+.page{display:none;min-height:100vh;position:relative;z-index:1;}
+.page.active{display:flex;flex-direction:column;animation:popIn .35s cubic-bezier(.34,1.56,.64,1);}
+@keyframes popIn{from{opacity:0;transform:scale(.96) translateY(12px);}to{opacity:1;transform:scale(1) translateY(0);}}
+@keyframes floatUD{0%,100%{transform:translateY(0) rotate(-4deg);}50%{transform:translateY(-16px) rotate(4deg);}}
+@keyframes spin{to{transform:rotate(360deg);}}
+@keyframes bounce{0%,80%,100%{transform:scale(.6);opacity:.5;}40%{transform:scale(1.2);opacity:1;}}
+@keyframes pulse{0%,100%{transform:scale(1);}50%{transform:scale(1.06);}}
 
-        nav {
-            position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-            background: var(--purple);
-            display: flex; align-items: center; justify-content: space-between;
-            padding: 0 1.25rem; height: 58px;
-            box-shadow: 0 4px 20px rgba(107,33,232,0.4);
-        }
-        .nav-logo { font-family: 'Righteous', cursive; font-size: 1.2rem; color: white; cursor: pointer; display: flex; align-items: center; gap: 8px; }
-        .nav-badge { background: var(--green); color: var(--dark); font-family: 'Nunito', sans-serif; font-size: 9px; font-weight: 900; padding: 2px 8px; border-radius: 999px; letter-spacing: 0.1em; }
-        .nav-right { display: flex; align-items: center; gap: 0.6rem; }
-        .lang-toggle { background: rgba(255,255,255,0.15); border-radius: 999px; display: flex; align-items: center; padding: 3px; cursor: pointer; border: 2px solid rgba(255,255,255,0.25); }
-        .lang-btn { padding: 3px 10px; border-radius: 999px; font-size: 10px; font-weight: 900; letter-spacing: 0.08em; transition: all 0.2s; color: rgba(255,255,255,0.6); }
-        .lang-btn.active { background: var(--green); color: var(--dark); }
-        .profile-btn { width: 36px; height: 36px; border-radius: 50%; background: var(--green); border: 3px solid rgba(255,255,255,0.4); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 900; color: var(--dark); transition: transform 0.2s; }
-        .profile-btn:hover { transform: scale(1.1) rotate(-5deg); }
+nav{position:fixed;top:0;left:0;right:0;z-index:100;background:var(--purple);display:flex;align-items:center;justify-content:space-between;padding:0 1.25rem;height:58px;box-shadow:0 4px 20px rgba(107,33,232,.4);}
+.nav-logo{font-family:'Righteous',cursive;font-size:1.15rem;color:white;cursor:pointer;display:flex;align-items:center;gap:8px;}
+.nav-right{display:flex;align-items:center;gap:.6rem;}
+.lang-toggle{background:rgba(255,255,255,.15);border-radius:999px;display:flex;align-items:center;padding:3px;cursor:pointer;border:2px solid rgba(255,255,255,.25);}
+.lang-btn{padding:3px 10px;border-radius:999px;font-size:10px;font-weight:900;letter-spacing:.08em;transition:all .2s;color:rgba(255,255,255,.6);}
+.lang-btn.active{background:var(--green);color:var(--dark);}
+.profile-btn{width:36px;height:36px;border-radius:50%;overflow:hidden;border:3px solid rgba(255,255,255,.5);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:900;color:var(--dark);transition:transform .2s;background:var(--green);flex-shrink:0;}
+.profile-btn:hover{transform:scale(1.1) rotate(-5deg);}
+.profile-btn img{width:100%;height:100%;object-fit:cover;}
 
-        .card-purple { background: var(--purple); border-radius: 2.5rem; color: white; box-shadow: 0 8px 32px rgba(107,33,232,0.3); }
-        .card-green  { background: var(--green);  border-radius: 2.5rem; color: var(--dark); box-shadow: 0 8px 32px rgba(126,211,33,0.35); }
-        .card-white  { background: white; border-radius: 2.5rem; box-shadow: 0 4px 20px rgba(107,33,232,0.1); }
+.nav-icon-btn{background:rgba(255,255,255,.15);border:none;border-radius:999px;color:white;font-weight:900;font-size:.75rem;padding:5px 12px;cursor:pointer;display:flex;align-items:center;gap:4px;transition:background .2s;}
+.nav-icon-btn:hover{background:rgba(255,255,255,.25);}
 
-        textarea, select, input[type="text"] {
-            background: white; border: 3px solid #E0D9F7; border-radius: 1.25rem;
-            padding: 0.9rem 1.1rem; font-family: 'Nunito', sans-serif; font-size: 0.85rem; font-weight: 700;
-            color: var(--dark); width: 100%; outline: none; transition: border-color 0.2s, box-shadow 0.2s;
-        }
-        textarea:focus, select:focus, input[type="text"]:focus { border-color: var(--purple-light); box-shadow: 0 0 0 4px rgba(168,85,247,0.15); }
-        textarea::placeholder, input::placeholder { color: #C4B5E8; font-weight: 700; }
+.card-purple{background:var(--purple);border-radius:2.5rem;color:white;box-shadow:0 8px 32px rgba(107,33,232,.3);}
+.card-green{background:var(--green);border-radius:2.5rem;color:var(--dark);box-shadow:0 8px 32px rgba(126,211,33,.35);}
+.card-white{background:white;border-radius:2.5rem;box-shadow:0 4px 20px rgba(107,33,232,.1);}
 
-        .btn-green { background: var(--green); color: var(--dark); border: none; border-radius: 999px; font-family: 'Nunito', sans-serif; font-weight: 900; font-size: 0.9rem; padding: 0.9rem 1.75rem; cursor: pointer; transition: transform 0.15s, box-shadow 0.2s; box-shadow: 0 4px 14px rgba(126,211,33,0.5); display: inline-flex; align-items: center; gap: 6px; width: 100%; justify-content: center; }
-        .btn-green:hover { transform: scale(1.03); box-shadow: 0 6px 20px rgba(126,211,33,0.6); }
-        .btn-back { background: white; color: var(--purple); border: 3px solid #E0D9F7; border-radius: 999px; font-family: 'Nunito', sans-serif; font-weight: 900; font-size: 0.8rem; padding: 6px 16px; cursor: pointer; transition: all 0.2s; }
-        .btn-back:hover { background: #EDE9FA; }
+textarea,select,input[type=text]{background:white;border:3px solid #E0D9F7;border-radius:1.25rem;padding:.9rem 1.1rem;font-family:'Nunito',sans-serif;font-size:.85rem;font-weight:700;color:var(--dark);width:100%;outline:none;transition:border-color .2s,box-shadow .2s;}
+textarea:focus,select:focus,input:focus{border-color:var(--pl);box-shadow:0 0 0 4px rgba(168,85,247,.15);}
+textarea::placeholder,input::placeholder{color:#C4B5E8;font-weight:700;}
 
-        /* AI Generate button per chapter */
-        .btn-ai {
-            background: var(--purple); color: white; border: none; border-radius: 999px;
-            font-family: 'Nunito', sans-serif; font-weight: 900; font-size: 0.75rem;
-            padding: 7px 16px; cursor: pointer; transition: all 0.2s;
-            box-shadow: 0 3px 10px rgba(107,33,232,0.35);
-            display: inline-flex; align-items: center; gap: 5px;
-        }
-        .btn-ai:hover { transform: scale(1.05); box-shadow: 0 5px 16px rgba(107,33,232,0.5); }
-        .btn-ai:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+.btn-green{background:var(--green);color:var(--dark);border:none;border-radius:999px;font-family:'Nunito',sans-serif;font-weight:900;font-size:.9rem;padding:.9rem 1.75rem;cursor:pointer;transition:transform .15s,box-shadow .2s;box-shadow:0 4px 14px rgba(126,211,33,.5);display:inline-flex;align-items:center;gap:6px;width:100%;justify-content:center;}
+.btn-green:hover{transform:scale(1.03);box-shadow:0 6px 20px rgba(126,211,33,.6);}
+.btn-back{background:white;color:var(--purple);border:3px solid #E0D9F7;border-radius:999px;font-family:'Nunito',sans-serif;font-weight:900;font-size:.8rem;padding:6px 16px;cursor:pointer;transition:all .2s;}
+.btn-back:hover{background:#EDE9FA;}
+.btn-ai{background:var(--purple);color:white;border:none;border-radius:999px;font-family:'Nunito',sans-serif;font-weight:900;font-size:.75rem;padding:9px 18px;cursor:pointer;transition:all .2s;box-shadow:0 3px 10px rgba(107,33,232,.35);display:inline-flex;align-items:center;gap:5px;}
+.btn-ai:hover{transform:scale(1.05);}
+.btn-ai:disabled{opacity:.5;cursor:not-allowed;transform:none;}
 
-        .chapter-card { background: white; border-radius: 2rem; cursor: pointer; border: 3px solid #E0D9F7; transition: all 0.25s; overflow: hidden; }
-        .chapter-card:hover { border-color: var(--purple-light); box-shadow: 0 6px 24px rgba(107,33,232,0.15); }
-        .chapter-card.open { border-color: var(--green); box-shadow: 0 6px 24px rgba(126,211,33,0.2); }
+.chapter-card{background:white;border-radius:2rem;cursor:pointer;border:3px solid #E0D9F7;transition:all .25s;overflow:hidden;}
+.chapter-card:hover{border-color:var(--pl);box-shadow:0 6px 24px rgba(107,33,232,.15);}
+.chapter-card.open{border-color:var(--green);box-shadow:0 6px 24px rgba(126,211,33,.2);}
+.chapter-num-badge{background:var(--purple);color:white;border-radius:999px;font-size:9px;font-weight:900;padding:3px 10px;letter-spacing:.12em;text-transform:uppercase;display:inline-block;}
+.chapter-card.open .chapter-num-badge{background:var(--green);color:var(--dark);}
 
-        .chapter-num-badge { background: var(--purple); color: white; border-radius: 999px; font-size: 9px; font-weight: 900; padding: 3px 10px; letter-spacing: 0.12em; text-transform: uppercase; display: inline-block; }
-        .chapter-card.open .chapter-num-badge { background: var(--green); color: var(--dark); }
+.detail-content{display:none;margin-top:1rem;padding-top:1rem;border-top:2px dashed #E0D9F7;}
+.detail-content.open{display:block;animation:popIn .25s ease;}
 
-        .detail-content { display: none; margin-top: 1rem; padding-top: 1rem; border-top: 2px dashed #E0D9F7; }
-        .detail-content.open { display: block; animation: popIn 0.25s ease; }
+.pill-label{display:inline-block;font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:.2em;padding:4px 12px;border-radius:999px;margin-bottom:10px;}
+.pill-purple{background:var(--purple);color:white;}
+.pill-green{background:var(--green);color:var(--dark);}
+.pill-blue{background:#3B82F6;color:white;}
+.pill-orange{background:#F97316;color:white;}
+.pill-red{background:#EF4444;color:white;}
+.pill-teal{background:#14B8A6;color:white;}
 
-        .pill-label { display: inline-block; font-size: 9px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.2em; padding: 4px 12px; border-radius: 999px; margin-bottom: 10px; }
-        .pill-green  { background: var(--green);  color: var(--dark); }
-        .pill-purple { background: var(--purple); color: white; }
+.blob-tag{background:rgba(255,255,255,.2);color:white;display:inline-block;padding:5px 16px;border-radius:0 999px 999px 999px;font-weight:900;font-size:.7rem;letter-spacing:.05em;margin-bottom:10px;}
+.blob-tag-purple{background:var(--purple);color:white;display:inline-block;padding:5px 16px;border-radius:0 999px 999px 999px;font-weight:900;font-size:.7rem;margin-bottom:10px;}
+.blob-tag-green{background:var(--green);color:var(--dark);display:inline-block;padding:6px 20px;border-radius:999px 0 999px 999px;font-weight:900;font-size:.72rem;}
+.star-deco{position:absolute;opacity:.2;pointer-events:none;color:white;}
 
-        .blob-tag { background: rgba(255,255,255,0.2); color: white; display: inline-block; padding: 5px 16px; border-radius: 0 999px 999px 999px; font-weight: 900; font-size: 0.7rem; letter-spacing: 0.05em; margin-bottom: 10px; }
-        .blob-tag-purple { background: var(--purple); color: white; display: inline-block; padding: 5px 16px; border-radius: 0 999px 999px 999px; font-weight: 900; font-size: 0.7rem; margin-bottom: 10px; }
-        .blob-tag-green  { background: var(--green); color: var(--dark); display: inline-block; padding: 6px 20px; border-radius: 999px 0 999px 999px; font-weight: 900; font-size: 0.72rem; }
-        .star-deco { position: absolute; opacity: 0.2; pointer-events: none; color: white; }
+.ai-output{background:linear-gradient(135deg,#1a0a3b 0%,#2d1060 100%);border-radius:1.5rem;padding:1.1rem 1.25rem;margin-top:10px;border:2px solid rgba(126,211,33,.3);}
+.ai-label{font-size:9px;font-weight:900;color:var(--green);text-transform:uppercase;letter-spacing:.2em;margin-bottom:10px;display:flex;align-items:center;gap:6px;}
+.ai-point{background:rgba(255,255,255,.06);border-radius:.75rem;padding:10px 12px;margin-bottom:8px;color:#ddd6fe;font-size:.78rem;font-weight:700;line-height:1.7;border-left:3px solid var(--green);}
+.ai-point-title{font-size:9px;color:var(--green);font-weight:900;letter-spacing:.15em;text-transform:uppercase;margin-bottom:5px;}
 
-        /* AI output box */
-        .ai-output {
-            background: linear-gradient(135deg, #1a0a3b 0%, #2d1060 100%);
-            border-radius: 1.5rem;
-            padding: 1.1rem 1.25rem;
-            margin-top: 10px;
-            border: 2px solid rgba(126,211,33,0.3);
-        }
-        .ai-output p { color: #e9d5ff; font-size: 0.78rem; font-weight: 700; line-height: 1.75; }
-        .ai-output .ai-label { font-size: 9px; font-weight: 900; color: var(--green); text-transform: uppercase; letter-spacing: 0.2em; margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
-        .ai-point { background: rgba(255,255,255,0.06); border-radius: 0.75rem; padding: 8px 12px; margin-bottom: 7px; color: #ddd6fe; font-size: 0.78rem; font-weight: 700; line-height: 1.6; border-left: 3px solid var(--green); }
+.spin{display:inline-block;width:12px;height:12px;border:2px solid rgba(255,255,255,.3);border-top-color:white;border-radius:50%;animation:spin .7s linear infinite;}
+.loading-dots span{display:inline-block;width:10px;height:10px;border-radius:50%;margin:0 3px;animation:bounce 1.2s infinite;}
+.loading-dots span:nth-child(1){background:var(--purple);}
+.loading-dots span:nth-child(2){background:var(--green);animation-delay:.2s;}
+.loading-dots span:nth-child(3){background:var(--purple);animation-delay:.4s;}
 
-        /* Typing cursor */
-        .typing-cursor::after { content: '▋'; animation: blink 0.7s infinite; color: var(--green); }
-        @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+label.field-label{display:block;font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:.2em;color:var(--purple);margin-bottom:8px;}
+.info-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;}
+.info-tag{background:#F5F3FF;color:var(--purple);border-radius:999px;font-size:10px;font-weight:900;padding:3px 12px;border:2px solid #E0D9F7;}
+.info-tag.green{background:#F0FDF0;color:#3D7A00;border-color:#BBF7D0;}
+.info-tag.blue{background:#EFF6FF;color:#1D4ED8;border-color:#BFDBFE;}
+.info-tag.orange{background:#FFF7ED;color:#C2410C;border-color:#FED7AA;}
 
-        /* Loading spinner mini */
-        .spin { display: inline-block; width: 12px; height: 12px; border: 2px solid rgba(255,255,255,0.3); border-top-color: white; border-radius: 50%; animation: spin 0.7s linear infinite; }
-        @keyframes spin { to { transform: rotate(360deg); } }
+.modal-overlay{display:none;position:fixed;inset:0;z-index:200;background:rgba(26,10,59,.65);backdrop-filter:blur(6px);align-items:flex-end;justify-content:center;}
+.modal-overlay.open{display:flex;animation:popIn .2s ease;}
+.modal-box{background:white;border-radius:2.5rem 2.5rem 0 0;padding:1.75rem 1.75rem 2.5rem;width:100%;max-width:440px;box-shadow:0 -20px 60px rgba(107,33,232,.35);border:3px solid #E0D9F7;display:flex;flex-direction:column;gap:1.1rem;max-height:90vh;overflow-y:auto;}
+.modal-box-center{border-radius:2.5rem;max-height:85vh;}
 
-        .modal-overlay { display: none; position: fixed; inset: 0; z-index: 200; background: rgba(26,10,59,0.6); backdrop-filter: blur(6px); align-items: center; justify-content: center; }
-        .modal-overlay.open { display: flex; animation: popIn 0.2s ease; }
-        .modal-box { background: white; border-radius: 2.5rem; padding: 2rem 1.75rem; width: 90%; max-width: 360px; box-shadow: 0 20px 60px rgba(107,33,232,0.35); border: 4px solid #E0D9F7; display: flex; flex-direction: column; gap: 1.25rem; }
+.synopsis-block{background:linear-gradient(135deg,#F5F3FF,#EDE9FA);border-radius:1rem;padding:13px 15px;font-size:.79rem;font-weight:700;color:var(--dark);line-height:1.8;border-left:4px solid var(--purple);margin-bottom:10px;}
+.detail-event{background:#FAF5FF;border-radius:1rem;padding:10px 13px;font-size:.78rem;font-weight:700;color:var(--dark);line-height:1.7;margin-bottom:7px;border-left:3px solid #C4B5E8;}
+.setting-block{background:linear-gradient(135deg,#EFF6FF,#DBEAFE);border-radius:1rem;padding:13px 15px;font-size:.79rem;font-weight:700;color:#1e3a5f;line-height:1.85;border-left:4px solid #3B82F6;margin-bottom:8px;}
+.setting-row{display:flex;gap:8px;margin-bottom:8px;align-items:flex-start;}
+.setting-icon{font-size:1.2rem;flex-shrink:0;margin-top:2px;}
+.setting-text{font-size:.78rem;font-weight:700;color:#1e3a5f;line-height:1.7;}
+.setting-label{font-size:8px;font-weight:900;text-transform:uppercase;letter-spacing:.2em;color:#3B82F6;margin-bottom:3px;}
 
-        .loading-dots span { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin: 0 3px; animation: bounce 1.2s infinite; }
-        .loading-dots span:nth-child(1) { background: var(--purple); }
-        .loading-dots span:nth-child(2) { background: var(--green); animation-delay: 0.2s; }
-        .loading-dots span:nth-child(3) { background: var(--purple); animation-delay: 0.4s; }
-        @keyframes bounce { 0%,80%,100%{transform:scale(0.6);opacity:0.5} 40%{transform:scale(1.2);opacity:1} }
+/* History */
+.hist-item{background:white;border-radius:1.5rem;padding:1rem 1.1rem;border:2.5px solid #E0D9F7;display:flex;align-items:center;gap:12px;cursor:pointer;transition:all .2s;}
+.hist-item:hover{border-color:var(--pl);box-shadow:0 4px 14px rgba(107,33,232,.12);}
+.hist-genre-badge{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0;}
 
-        label.field-label { display: block; font-size: 10px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.2em; color: var(--purple); margin-bottom: 8px; }
+/* SVG character floaters */
+.char-float{position:fixed;pointer-events:none;z-index:0;animation:floatUD 4s ease-in-out infinite;}
+.char-float:nth-child(2){animation-delay:.7s;animation-duration:5s;}
+.char-float:nth-child(3){animation-delay:1.5s;animation-duration:3.8s;}
+.char-float:nth-child(4){animation-delay:2.2s;animation-duration:4.8s;}
+.char-float:nth-child(5){animation-delay:.3s;animation-duration:5.5s;}
+.char-float:nth-child(6){animation-delay:1.1s;animation-duration:4.2s;}
 
-        .info-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 10px; }
-        .info-tag { background: #F5F3FF; color: var(--purple); border-radius: 999px; font-size: 10px; font-weight: 900; padding: 3px 12px; border: 2px solid #E0D9F7; }
-        .info-tag.green { background: #F0FDF0; color: #3D7A00; border-color: #BBF7D0; }
-    </style>
+/* Character row */
+.char-bubble{display:flex;align-items:center;justify-content:center;border-radius:50%;border:3px solid white;box-shadow:0 4px 12px rgba(0,0,0,.12);animation:floatUD 3s ease-in-out infinite;overflow:visible;}
+
+.photo-upload-area{border:3px dashed #C4B5E8;border-radius:50%;width:90px;height:90px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .2s;overflow:hidden;position:relative;background:#F5F3FF;margin:0 auto;}
+.photo-upload-area:hover{border-color:var(--purple);background:#EDE9FA;}
+.photo-upload-area img{width:100%;height:100%;object-fit:cover;border-radius:50%;}
+</style>
 </head>
 <body>
 
-<nav>
-    <div class="nav-logo" onclick="goHome()">✍️ NovelConsult <span class="nav-badge">ABI 16</span></div>
-    <div class="nav-right">
-        <div class="lang-toggle" onclick="toggleLang()">
-            <div class="lang-btn active" id="btn-id">ID</div>
-            <div class="lang-btn" id="btn-en">EN</div>
-        </div>
-        <div class="profile-btn" id="profile-avatar" onclick="openProfile()"><span id="profile-initials">?</span></div>
-    </div>
-</nav>
-
-<!-- PAGE 1: HOME -->
-<div class="page active" id="page-home" style="padding-top:58px;">
-    <div style="padding:1.25rem 1rem 2rem;max-width:440px;margin:0 auto;width:100%;display:flex;flex-direction:column;gap:1rem;">
-        <div class="card-purple" style="padding:1.75rem;position:relative;overflow:hidden;">
-            <span class="star-deco" style="top:10px;right:22px;font-size:1.8rem;">✦</span>
-            <span class="star-deco" style="bottom:12px;left:28px;font-size:1rem;">✦</span>
-            <div class="blob-tag" id="txt-sub-header">Deep Narrative Architect</div>
-            <h1 style="font-family:'Righteous',cursive;font-size:2.5rem;line-height:1.05;color:white;">Novel<br>Consult</h1>
-            <p style="font-size:0.83rem;color:rgba(255,255,255,0.78);margin-top:10px;font-weight:700;" id="txt-tagline">Bangun outline novel kamu secara mendalam ✨</p>
-        </div>
-        <div class="card-white" style="padding:1.5rem;display:flex;flex-direction:column;gap:1rem;">
-            <div>
-                <label class="field-label" id="lbl-idea">Premis atau Ide Utama</label>
-                <textarea id="user-idea" rows="4" placeholder="Masukkan ide cerita kamu..."></textarea>
-            </div>
-            <div>
-                <label class="field-label" id="lbl-chapters">Jumlah Bab</label>
-                <select id="total-chapters">
-                    <option value="5">5 Bab (Singkat)</option>
-                    <option value="10">10 Bab (Sedang)</option>
-                    <option value="20">20 Bab (Panjang)</option>
-                </select>
-            </div>
-        </div>
-        <button class="btn-green" onclick="generateOutline()" id="btn-generate">⚡ Generate Detail</button>
-        <div style="text-align:center;"><span class="blob-tag-green" id="txt-hint">Klik tiap bab untuk lihat detail cerita</span></div>
-    </div>
+<!-- SVG Floating Characters (Inside Out style drawn in SVG) -->
+<!-- Joy -->
+<div class="char-float" style="top:12%;left:2%;opacity:.22;width:56px;">
+<svg viewBox="0 0 80 120" xmlns="http://www.w3.org/2000/svg">
+  <ellipse cx="40" cy="65" rx="26" ry="32" fill="#FFD700"/>
+  <ellipse cx="40" cy="40" rx="22" ry="24" fill="#FFE44D"/>
+  <circle cx="32" cy="36" r="4" fill="white"/><circle cx="48" cy="36" r="4" fill="white"/>
+  <circle cx="33" cy="37" r="2.5" fill="#1a60c8"/><circle cx="49" cy="37" r="2.5" fill="#1a60c8"/>
+  <path d="M32 48 Q40 55 48 48" stroke="#1a60c8" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+  <ellipse cx="40" cy="10" rx="18" ry="12" fill="#60B0FF"/>
+  <path d="M22 10 Q40 0 58 10" fill="#60B0FF"/>
+  <rect x="28" y="62" width="24" height="28" rx="8" fill="#FFFAD0"/>
+  <ellipse cx="25" cy="72" rx="7" ry="5" fill="#FFE44D"/>
+  <ellipse cx="55" cy="72" rx="7" ry="5" fill="#FFE44D"/>
+  <ellipse cx="30" cy="104" rx="8" ry="10" fill="#FFD700"/>
+  <ellipse cx="50" cy="104" rx="8" ry="10" fill="#FFD700"/>
+</svg>
 </div>
 
-<!-- PAGE 2: RESULT -->
-<div class="page" id="page-result" style="padding-top:58px;">
-    <div style="padding:1.25rem 1rem 2rem;max-width:440px;margin:0 auto;width:100%;display:flex;flex-direction:column;gap:1rem;">
-        <div class="card-green" style="padding:1.5rem;position:relative;overflow:hidden;">
-            <span class="star-deco" style="top:8px;right:18px;font-size:1.4rem;color:var(--dark);">✦</span>
-            <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;">
-                <div>
-                    <div class="blob-tag-purple" id="txt-result-label">Master Plot</div>
-                    <h2 style="font-family:'Righteous',cursive;font-size:1.7rem;color:var(--dark);line-height:1.1;" id="txt-result-title">Character Bible</h2>
-                </div>
-                <button class="btn-back" onclick="goHome()" id="btn-back">← Kembali</button>
-            </div>
-        </div>
-        <div id="loading-state" class="card-white" style="padding:2.5rem;text-align:center;display:flex;flex-direction:column;align-items:center;gap:1rem;">
-            <div class="loading-dots"><span></span><span></span><span></span></div>
-            <p style="font-weight:900;color:var(--purple);font-size:0.9rem;" id="txt-generating">Sedang membangun outline...</p>
-        </div>
-        <div id="display-chapters" style="display:none;flex-direction:column;gap:0.75rem;"></div>
-    </div>
+<!-- Anger -->
+<div class="char-float" style="top:38%;right:3%;opacity:.2;width:50px;">
+<svg viewBox="0 0 80 110" xmlns="http://www.w3.org/2000/svg">
+  <rect x="12" y="40" width="56" height="50" rx="14" fill="#E53E3E"/>
+  <rect x="20" y="20" width="40" height="36" rx="10" fill="#FC4444"/>
+  <rect x="14" y="16" width="14" height="6" rx="3" fill="#FF8C00" transform="rotate(-20 21 19)"/>
+  <rect x="52" y="16" width="14" height="6" rx="3" fill="#FF8C00" transform="rotate(20 59 19)"/>
+  <rect x="28" y="28" width="8" height="5" rx="2" fill="white"/><rect x="44" y="28" width="8" height="5" rx="2" fill="white"/>
+  <rect x="29" y="29" width="5" height="3" rx="1" fill="#1a0a3b"/><rect x="45" y="29" width="5" height="3" rx="1" fill="#1a0a3b"/>
+  <path d="M28 41 Q40 36 52 41" stroke="#1a0a3b" stroke-width="2.5" fill="none"/>
+  <rect x="22" y="14" width="36" height="4" rx="2" fill="#CC3300" transform="rotate(-8 40 16)"/>
+  <!-- fire top -->
+  <ellipse cx="40" cy="8" rx="8" ry="10" fill="#FF8C00" opacity=".9"/>
+  <ellipse cx="40" cy="5" rx="5" ry="7" fill="#FFD700" opacity=".9"/>
+  <rect x="28" y="72" width="24" height="20" rx="8" fill="#C53030"/>
+  <ellipse cx="22" cy="80" rx="7" ry="5" fill="#E53E3E"/>
+  <ellipse cx="58" cy="80" rx="7" ry="5" fill="#E53E3E"/>
+  <ellipse cx="28" cy="96" rx="8" ry="9" fill="#E53E3E"/>
+  <ellipse cx="52" cy="96" rx="8" ry="9" fill="#E53E3E"/>
+</svg>
 </div>
 
-<!-- PROFILE MODAL -->
-<div class="modal-overlay" id="profile-modal" onclick="closeProfileIfOutside(event)">
-    <div class="modal-box">
-        <div style="display:flex;align-items:center;justify-content:space-between;">
-            <div>
-                <p style="font-family:'Righteous',cursive;font-size:1.25rem;color:var(--purple);" id="txt-profile-title">Profil Saya</p>
-                <p style="font-size:10px;font-weight:700;color:#9CA3AF;letter-spacing:0.15em;text-transform:uppercase;" id="txt-profile-sub">Ubah nama kamu</p>
-            </div>
-            <button onclick="closeProfile()" style="background:#EDE9FA;border:none;border-radius:50%;width:32px;height:32px;cursor:pointer;font-size:1rem;color:var(--purple);font-weight:900;display:flex;align-items:center;justify-content:center;">✕</button>
-        </div>
-        <div style="display:flex;justify-content:center;">
-            <div id="modal-initials" style="width:74px;height:74px;border-radius:50%;background:var(--purple);display:flex;align-items:center;justify-content:center;font-family:'Righteous',cursive;font-size:1.7rem;color:white;border:5px solid var(--green);">?</div>
-        </div>
-        <div>
-            <label class="field-label" id="lbl-name">Nama Kamu</label>
-            <input type="text" id="profile-name-input" placeholder="Masukkan nama kamu..." oninput="previewName()" maxlength="30">
-        </div>
-        <button class="btn-green" onclick="saveName()" id="btn-save-name">💾 Simpan</button>
-    </div>
-</div>
-
-<script>
-let lang = 'id';
-let profileName = localStorage.getItem('nc_name') || '';
-let globalIdea = '';
-let globalCount = 5;
-
-const t = {
-    id: {
-        tagline:'Bangun outline novel kamu secara mendalam ✨', subHeader:'Deep Narrative Architect',
-        lblIdea:'Premis atau Ide Utama', lblChapters:'Jumlah Bab',
-        btnGenerate:'⚡ Generate Detail', btnBack:'← Kembali',
-        resultLabel:'Master Plot', resultTitle:'Character Bible',
-        generating:'Sedang membangun outline...', hint:'Klik tiap bab untuk lihat detail cerita',
-        chapterPrefix:'BAB', chapterTitle:'Eksplorasi Keajaiban', clickHint:'Klik untuk detail ▼',
-        tokohTitle:'👥 Tokoh & Sifat', kejadianTitle:'📖 Rangkaian Kejadian',
-        profileTitle:'Profil Saya', profileSub:'Ubah nama kamu',
-        lblName:'Nama Kamu', btnSave:'💾 Simpan',
-        namePlaceholder:'Masukkan nama kamu...', alertIdea:'Isi ide ceritanya dulu!',
-        idePlaceholder:'Masukkan ide cerita kamu...',
-        tokoh1Name:'Tokoh Utama', tokoh1Desc:'Penasaran tinggi, cerdas, namun terkadang ceroboh.',
-        tokoh2Name:'Antagonis / Penjaga Rahasia', tokoh2Desc:'Dingin, manipulatif, memiliki kekuatan tersembunyi.',
-        chapterOptions:['5 Bab (Singkat)','10 Bab (Sedang)','20 Bab (Panjang)'],
-        btnAI:'✨ Perluas dengan AI', btnAILoading:'Generating...', aiLabel:'✦ Analisis Mendalam oleh AI',
-        staticEvents:[
-            '🔍 Tokoh utama menemukan petunjuk pertama yang mengarah langsung ke inti misteri cerita.',
-            '💬 Terjadi dialog penting yang membuka lapisan karakter & motivasi lebih dalam.',
-            '⚡ Konflik meningkat — tekanan eksternal mulai mengancam tujuan tokoh utama.',
-            '🚪 Titik balik bab ini: sebuah keputusan besar harus diambil oleh tokoh utama.',
-            '🌀 Bab ditutup dengan cliffhanger atau revelasi yang mendorong pembaca ke bab berikutnya.',
-        ],
-        aiPrompt: (idea, babKe, total) =>
-            `Kamu adalah penulis novel profesional. Buatkan penjelasan detail untuk BAB ${babKe} dari total ${total} bab novel dengan premis berikut:\n\n"${idea}"\n\nBuat 6 poin penjelasan yang SPESIFIK dan MENDALAM untuk bab ini, mencakup: suasana/setting, konflik utama bab, perkembangan karakter, dialog kunci, plot twist kecil, dan bagaimana bab ini menghubungkan ke bab berikutnya. Gunakan bahasa Indonesia yang hidup dan sinematik.\n\nFormat output HANYA sebagai JSON array of strings seperti ini (tanpa backtick, tanpa penjelasan lain):\n["poin 1 panjang minimal 2 kalimat", "poin 2 panjang minimal 2 kalimat", "poin 3...", "poin 4...", "poin 5...", "poin 6..."]`,
-    },
-    en: {
-        tagline:'Build your novel outline in depth ✨', subHeader:'Deep Narrative Architect',
-        lblIdea:'Premise or Main Idea', lblChapters:'Number of Chapters',
-        btnGenerate:'⚡ Generate Detail', btnBack:'← Back',
-        resultLabel:'Master Plot', resultTitle:'Character Bible',
-        generating:'Building your outline...', hint:'Click each chapter to see details',
-        chapterPrefix:'CHAPTER', chapterTitle:'Exploration of Wonders', clickHint:'Click for detail ▼',
-        tokohTitle:'👥 Characters & Traits', kejadianTitle:'📖 Plot Events',
-        profileTitle:'My Profile', profileSub:'Edit your name',
-        lblName:'Your Name', btnSave:'💾 Save',
-        namePlaceholder:'Enter your name...', alertIdea:'Please fill in your story idea first!',
-        idePlaceholder:'Enter your story idea...',
-        tokoh1Name:'Main Character', tokoh1Desc:'Highly curious, intelligent, but sometimes reckless.',
-        tokoh2Name:'Antagonist / Secret Keeper', tokoh2Desc:'Cold, manipulative, possesses hidden powers.',
-        chapterOptions:['5 Chapters (Short)','10 Chapters (Medium)','20 Chapters (Long)'],
-        btnAI:'✨ Expand with AI', btnAILoading:'Generating...', aiLabel:'✦ Deep Analysis by AI',
-        staticEvents:[
-            '🔍 The main character discovers the first clue pointing directly to the core mystery.',
-            '💬 A key dialogue unfolds that reveals deeper character layers and motivations.',
-            '⚡ Conflict escalates — external pressure begins to threaten the protagonist\'s goal.',
-            '🚪 The turning point of this chapter: a major decision must be made.',
-            '🌀 The chapter closes with a cliffhanger or revelation that pulls readers forward.',
-        ],
-        aiPrompt: (idea, chapNum, total) =>
-            `You are a professional novelist. Write a detailed breakdown for CHAPTER ${chapNum} of ${total} total chapters for a novel with this premise:\n\n"${idea}"\n\nCreate 6 SPECIFIC and DEEP bullet points for this chapter covering: atmosphere/setting, main conflict, character development, key dialogue, minor plot twist, and how this chapter connects to the next. Use vivid, cinematic English.\n\nOutput ONLY as a JSON array of strings (no backticks, no extra text):\n["point 1 at least 2 sentences", "point 2...", "point 3...", "point 4...", "point 5...", "point 6..."]`,
-    }
-};
-
-updateProfileDisplay();
-applyLang();
-
-function toggleLang() {
-    lang = lang === 'id' ? 'en' : 'id';
-    document.getElementById('btn-id').classList.toggle('active', lang==='id');
-    document.getElementById('btn-en').classList.toggle('active', lang==='en');
-    applyLang();
-}
-function applyLang() {
-    const tx = t[lang];
-    const ids = {
-        'txt-tagline':tx.tagline,'txt-sub-header':tx.subHeader,'lbl-idea':tx.lblIdea,
-        'lbl-chapters':tx.lblChapters,'btn-generate':tx.btnGenerate,'btn-back':tx.btnBack,
-        'txt-result-label':tx.resultLabel,'txt-result-title':tx.resultTitle,
-        'txt-generating':tx.generating,'txt-hint':tx.hint,'txt-profile-title':tx.profileTitle,
-        'txt-profile-sub':tx.profileSub,'lbl-name':tx.lblName,'btn-save-name':tx.btnSave
-    };
-    for (const [id,val] of Object.entries(ids)) { const el=document.getElementById(id); if(el) el.textContent=val; }
-    document.getElementById('profile-name-input').placeholder = tx.namePlaceholder;
-    document.getElementById('user-idea').placeholder = tx.idePlaceholder;
-    const sel = document.getElementById('total-chapters');
-    for (let i=0;i<sel.options.length;i++) sel.options[i].text = tx.chapterOptions[i];
-    document.documentElement.lang = lang;
-}
-
-function showPage(id) {
-    document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-    document.getElementById(id).classList.add('active');
-    window.scrollTo({top:0,behavior:'instant'});
-}
-function goHome() { showPage('page-home'); }
-
-function generateOutline() {
-    const idea = document.getElementById('user-idea').value.trim();
-    const count = parseInt(document.getElementById('total-chapters').value);
-    if (!idea) return alert(t[lang].alertIdea);
-    globalIdea = idea;
-    globalCount = count;
-
-    showPage('page-result');
-    document.getElementById('loading-state').style.display = 'flex';
-    const chDiv = document.getElementById('display-chapters');
-    chDiv.style.display = 'none';
-    chDiv.innerHTML = '';
-    setTimeout(() => buildChapters(idea, count), 800);
-}
-
-function buildChapters(idea, count) {
-    const tx = t[lang];
-    const list = document.getElementById('display-chapters');
-    list.innerHTML = '';
-    const snippet = idea.length > 40 ? idea.substring(0,40)+'...' : idea;
-
-    for (let i=1; i<=count; i++) {
-        const div = document.createElement('div');
-        div.className = 'chapter-card';
-        div.id = `chapter-${i}`;
-
-        // Static events HTML
-        const staticHTML = tx.staticEvents.map(e =>
-            `<div style="background:#FAF5FF;border-radius:1rem;padding:10px 13px;font-size:0.78rem;font-weight:700;color:var(--dark);line-height:1.65;margin-bottom:7px;border-left:3px solid #C4B5E8;">${e}</div>`
-        ).join('');
-
-        div.innerHTML = `
-            <div style="padding:1.25rem;" onclick="toggleChapter(${i}, event)">
-                <div style="display:flex;align-items:center;justify-content:space-between;">
-                    <div>
-                        <span class="chapter-num-badge" id="badge-${i}">${tx.chapterPrefix} ${i}</span>
-                        <p style="font-family:'Righteous',cursive;font-size:1rem;color:var(--dark);margin-top:6px;">${tx.chapterTitle}</p>
-                    </div>
-                    <span style="font-size:10px;font-weight:800;color:#C4B5E8;">${tx.clickHint}</span>
-                </div>
-
-                <div class="detail-content" id="detail-${i}">
-                    <!-- Tokoh -->
-                    <div style="margin-bottom:1rem;">
-                        <span class="pill-label pill-purple">${tx.tokohTitle}</span>
-                        <div style="display:flex;flex-direction:column;gap:8px;">
-                            <div style="background:#F5F3FF;border-radius:1rem;padding:12px;border-left:4px solid var(--purple);">
-                                <p style="font-weight:900;color:var(--purple);font-size:0.8rem;">${tx.tokoh1Name}</p>
-                                <p style="font-size:0.75rem;color:#6B7280;margin-top:3px;font-weight:700;">${tx.tokoh1Desc}</p>
-                            </div>
-                            <div style="background:#F0FDF0;border-radius:1rem;padding:12px;border-left:4px solid var(--green);">
-                                <p style="font-weight:900;color:#3D7A00;font-size:0.8rem;">${tx.tokoh2Name}</p>
-                                <p style="font-size:0.75rem;color:#6B7280;margin-top:3px;font-weight:700;">${tx.tokoh2Desc}</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Info tags -->
-                    <div class="info-row">
-                        <span class="info-tag">📍 Setting: Bab ${i}</span>
-                        <span class="info-tag green">🎭 Konflik: Level ${Math.min(i, 10)}/10</span>
-                        <span class="info-tag">⏱ Est. ${Math.floor(800 + i*120)} kata</span>
-                    </div>
-
-                    <!-- Static events -->
-                    <div style="margin-bottom:1rem;">
-                        <span class="pill-label pill-green">${tx.kejadianTitle}</span>
-                        ${staticHTML}
-                    </div>
-
-                    <!-- AI expand button -->
-                    <div id="ai-area-${i}">
-                        <button class="btn-ai" id="ai-btn-${i}" onclick="generateAI(${i}, event)">✨ ${tx.btnAI}</button>
-                    </div>
-                </div>
-            </div>
-        `;
-        list.appendChild(div);
-    }
-
-    document.getElementById('loading-state').style.display = 'none';
-    list.style.display = 'flex';
-    list.style.flexDirection = 'column';
-    list.style.gap = '0.75rem';
-}
-
-function toggleChapter(i, event) {
-    // Don't toggle if clicking AI button
-    if (event.target.closest('.btn-ai')) return;
-    const detail = document.getElementById(`detail-${i}`);
-    const card   = document.getElementById(`chapter-${i}`);
-    const badge  = document.getElementById(`badge-${i}`);
-    detail.classList.toggle('open');
-    card.classList.toggle('open');
-}
-
-async function generateAI(chapNum, event) {
-    event.stopPropagation();
-    const tx = t[lang];
-    const btn = document.getElementById(`ai-btn-${chapNum}`);
-    const area = document.getElementById(`ai-area-${chapNum}`);
-
-    // Show loading state
-    btn.disabled = true;
-    btn.innerHTML = `<span class="spin"></span> ${tx.btnAILoading}`;
-
-    try {
-        const response = await fetch("https://api.anthropic.com/v1/messages", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                model: "claude-sonnet-4-20250514",
-                max_tokens: 1000,
-                messages: [{
-                    role: "user",
-                    content: tx.aiPrompt(globalIdea, chapNum, globalCount)
-                }]
-            })
-        });
-
-        const data = await response.json();
-        const rawText = data.content?.find(b => b.type === 'text')?.text || '[]';
-
-        // Parse JSON array
-        let points = [];
-        try {
-            const clean = rawText.replace(/```json|```/g, '').trim();
-            points = JSON.parse(clean);
-        } catch {
-            // fallback: split by newline
-            points = rawText.split('\n').filter(l => l.trim().length > 10).slice(0, 6);
-        }
-
-        // Render AI output
-        const pointsHTML = points.map((p, idx) => {
-            const icons = ['🎬','🗣️','⚔️','💡','🌪️','🔗'];
-            return `<div class="ai-point">${icons[idx] || '•'} ${p}</div>`;
-        }).join('');
-
-        area.innerHTML = `
-            <div class="ai-output">
-                <div class="ai-label"><span style="width:8px;height:8px;background:var(--green);border-radius:50%;display:inline-block;"></span>${tx.aiLabel}</div>
-                ${pointsHTML}
-            </div>
-        `;
-
-    } catch (err) {
-        area.innerHTML = `
-            <div style="background:#FEF2F2;border-radius:1rem;padding:10px 14px;font-size:0.78rem;font-weight:700;color:#DC2626;border:2px solid #FECACA;">
-                ⚠️ Gagal generate. Coba lagi nanti.
-            </div>
-            <button class="btn-ai" style="margin-top:8px;" onclick="generateAI(${chapNum}, event)">🔄 Coba Lagi</button>
-        `;
-    }
-}
-
-// Profile
-function openProfile() { document.getElementById('profile-name-input').value=profileName; updateModalInitials(profileName); document.getElementById('profile-modal').classList.add('open'); }
-function closeProfile() { document.getElementById('profile-modal').classList.remove('open'); }
-function closeProfileIfOutside(e) { if(e.target===document.getElementById('profile-modal')) closeProfile(); }
-function previewName() { updateModalInitials(document.getElementById('profile-name-input').value); }
-function saveName() { profileName=document.getElementById('profile-name-input').value.trim(); localStorage.setItem('nc_name',profileName); updateProfileDisplay(); closeProfile(); }
-function updateProfileDisplay() { document.getElementById('profile-initials').textContent=getInitials(profileName)||'?'; }
-function updateModalInitials(name) { document.getElementById('modal-initials').textContent=getInitials(name)||'?'; }
-function getInitials(name) { if(!name)return''; const p=name.trim().split(/\s+/); return p.length>=2?(p[0][0]+p[1][0]).toUpperCase():name.substring(0,2).toUpperCase(); }
-</script>
-</body>
-</html>
+<!-- Sadness -->
+<div class="char-float" style="top:65%;left:3%;opacity:.2;width:52px;">
+<svg viewBox="0 0 80 120" xmlns="http://www.w3.org/2000/svg">
+  <ellipse cx="40" cy="70" rx="24" ry="30" fill="#5B9BD5"/>
+  <ellipse cx="40" cy="42" rx="22" ry="24" fill="#73B0E8"/>
+  <!-- glasses -->
+  <circle cx="33" cy="40" r="9" fill="none" stroke="#1a3a5e" stroke-width="2.5"/>
+  <circle cx="51" cy="40" r="9" fill="none" stroke="#1a3a5e" stroke-width="2.5"/>
+  <line x1="42" y1="40" x2="42" y2="40" stroke="#1a3a5e" stroke-width="2.5"/>
+  <circle cx="33" cy="40" r="6" fill="white" opacity=".7"/>
+  <circle cx="51" cy="40" r="6" fill="white" opacity=".7"/>
+  
