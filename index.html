@@ -2,10 +2,15 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#6B21E8">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="NovelConsult">
+    <meta name="mobile-web-app-capable" content="yes">
+    <link rel="manifest" href="manifest.json">
     <title>NovelConsult Pro</title>
     <link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,400;0,700;0,800;0,900;1,700&family=Righteous&display=swap" rel="stylesheet">
-    <script src="https://cdn.tailwindcss.com"></script>
     <style>
         :root {
             --green: #7ED321;
@@ -13,311 +18,344 @@
             --purple-light: #A855F7;
             --bg: #F0EDFA;
             --dark: #1a0a3b;
+            --red: #E8433C;
+            --blue: #3B82F6;
+            --orange: #F97316;
+            --teal: #14B8A6;
         }
-        * { box-sizing: border-box; margin: 0; padding: 0; }
+        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
         body { background: var(--bg); font-family: 'Nunito', sans-serif; min-height: 100vh; overflow-x: hidden; }
 
-        /* Floating emotion characters */
-        .float-char {
-            position: fixed;
-            pointer-events: none;
-            z-index: 0;
-            animation: floatUpDown 4s ease-in-out infinite;
-            user-select: none;
-            font-size: 2.5rem;
+        /* PWA Install Banner */
+        #pwa-banner {
+            position: fixed; bottom: 0; left: 0; right: 0; z-index: 300;
+            background: var(--dark); color: white;
+            padding: 14px 18px; display: flex; align-items: center; gap: 12px;
+            box-shadow: 0 -4px 20px rgba(0,0,0,0.3);
+            animation: slideUp 0.4s ease;
         }
-        .float-char:nth-child(2) { animation-delay: 0.8s; animation-duration: 5.2s; }
-        .float-char:nth-child(3) { animation-delay: 1.6s; animation-duration: 3.8s; }
-        .float-char:nth-child(4) { animation-delay: 2.4s; animation-duration: 4.6s; }
-        .float-char:nth-child(5) { animation-delay: 0.4s; animation-duration: 5.8s; }
-        @keyframes floatUpDown {
-            0%,100% { transform: translateY(0px) rotate(-5deg); }
-            50% { transform: translateY(-18px) rotate(5deg); }
+        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+        #pwa-banner.hidden { display: none; }
+        .pwa-icon { width: 44px; height: 44px; border-radius: 12px; background: var(--purple); display: flex; align-items: center; justify-content: center; font-size: 1.4rem; flex-shrink: 0; }
+        .pwa-text { flex: 1; }
+        .pwa-text p { font-size: 0.78rem; font-weight: 900; }
+        .pwa-text span { font-size: 0.65rem; font-weight: 700; color: rgba(255,255,255,0.6); }
+        .pwa-install-btn { background: var(--green); color: var(--dark); border: none; border-radius: 999px; font-family: 'Nunito', sans-serif; font-weight: 900; font-size: 0.72rem; padding: 8px 14px; cursor: pointer; flex-shrink: 0; }
+        .pwa-close-btn { background: none; border: none; color: rgba(255,255,255,0.5); font-size: 1.1rem; cursor: pointer; padding: 4px; flex-shrink: 0; }
+
+        /* iOS Install Guide */
+        #ios-install-guide {
+            position: fixed; inset: 0; z-index: 400; background: rgba(26,10,59,0.85); backdrop-filter: blur(8px);
+            display: flex; align-items: flex-end; justify-content: center;
         }
+        #ios-install-guide.hidden { display: none; }
+        .ios-guide-box { background: white; border-radius: 2.5rem 2.5rem 0 0; padding: 2rem 1.5rem 2.5rem; width: 100%; max-width: 440px; }
+        .ios-step { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid #F3F0FF; }
+        .ios-step-num { width: 30px; height: 30px; border-radius: 50%; background: var(--purple); color: white; font-size: 0.8rem; font-weight: 900; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
 
-        body::before {
-            content: ''; position: fixed; width: 420px; height: 420px;
-            background: radial-gradient(circle, rgba(107,33,232,0.18), transparent 70%);
-            border-radius: 50%; top: -80px; right: -80px; pointer-events: none; z-index: 0;
-        }
-        body::after {
-            content: ''; position: fixed; width: 300px; height: 300px;
-            background: radial-gradient(circle, rgba(126,211,33,0.15), transparent 70%);
-            border-radius: 50%; bottom: 60px; left: -60px; pointer-events: none; z-index: 0;
-        }
-
-        .page { display: none; min-height: 100vh; position: relative; z-index: 1; }
-        .page.active { display: flex; flex-direction: column; animation: popIn 0.35s cubic-bezier(.34,1.56,.64,1); }
-        @keyframes popIn {
-            from { opacity: 0; transform: scale(0.96) translateY(12px); }
-            to   { opacity: 1; transform: scale(1) translateY(0); }
-        }
-
-        nav {
-            position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-            background: var(--purple);
-            display: flex; align-items: center; justify-content: space-between;
-            padding: 0 1.25rem; height: 58px;
-            box-shadow: 0 4px 20px rgba(107,33,232,0.4);
-        }
-        .nav-logo { font-family: 'Righteous', cursive; font-size: 1.2rem; color: white; cursor: pointer; display: flex; align-items: center; gap: 8px; }
-        .nav-right { display: flex; align-items: center; gap: 0.6rem; }
-        .lang-toggle { background: rgba(255,255,255,0.15); border-radius: 999px; display: flex; align-items: center; padding: 3px; cursor: pointer; border: 2px solid rgba(255,255,255,0.25); }
-        .lang-btn { padding: 3px 10px; border-radius: 999px; font-size: 10px; font-weight: 900; letter-spacing: 0.08em; transition: all 0.2s; color: rgba(255,255,255,0.6); }
-        .lang-btn.active { background: var(--green); color: var(--dark); }
-        .profile-btn { width: 36px; height: 36px; border-radius: 50%; background: var(--green); border: 3px solid rgba(255,255,255,0.4); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 900; color: var(--dark); transition: transform 0.2s; }
-        .profile-btn:hover { transform: scale(1.1) rotate(-5deg); }
-
-        .card-purple { background: var(--purple); border-radius: 2.5rem; color: white; box-shadow: 0 8px 32px rgba(107,33,232,0.3); }
-        .card-green  { background: var(--green);  border-radius: 2.5rem; color: var(--dark); box-shadow: 0 8px 32px rgba(126,211,33,0.35); }
-        .card-white  { background: white; border-radius: 2.5rem; box-shadow: 0 4px 20px rgba(107,33,232,0.1); }
-
-        textarea, select, input[type="text"] {
-            background: white; border: 3px solid #E0D9F7; border-radius: 1.25rem;
-            padding: 0.9rem 1.1rem; font-family: 'Nunito', sans-serif; font-size: 0.85rem; font-weight: 700;
-            color: var(--dark); width: 100%; outline: none; transition: border-color 0.2s, box-shadow 0.2s;
-        }
-        textarea:focus, select:focus, input[type="text"]:focus { border-color: var(--purple-light); box-shadow: 0 0 0 4px rgba(168,85,247,0.15); }
-        textarea::placeholder, input::placeholder { color: #C4B5E8; font-weight: 700; }
-
-        .btn-green { background: var(--green); color: var(--dark); border: none; border-radius: 999px; font-family: 'Nunito', sans-serif; font-weight: 900; font-size: 0.9rem; padding: 0.9rem 1.75rem; cursor: pointer; transition: transform 0.15s, box-shadow 0.2s; box-shadow: 0 4px 14px rgba(126,211,33,0.5); display: inline-flex; align-items: center; gap: 6px; width: 100%; justify-content: center; }
-        .btn-green:hover { transform: scale(1.03); box-shadow: 0 6px 20px rgba(126,211,33,0.6); }
-        .btn-back { background: white; color: var(--purple); border: 3px solid #E0D9F7; border-radius: 999px; font-family: 'Nunito', sans-serif; font-weight: 900; font-size: 0.8rem; padding: 6px 16px; cursor: pointer; transition: all 0.2s; }
-        .btn-back:hover { background: #EDE9FA; }
-
-        .btn-ai {
-            background: var(--purple); color: white; border: none; border-radius: 999px;
-            font-family: 'Nunito', sans-serif; font-weight: 900; font-size: 0.75rem;
-            padding: 7px 16px; cursor: pointer; transition: all 0.2s;
-            box-shadow: 0 3px 10px rgba(107,33,232,0.35);
-            display: inline-flex; align-items: center; gap: 5px;
-        }
-        .btn-ai:hover { transform: scale(1.05); box-shadow: 0 5px 16px rgba(107,33,232,0.5); }
-        .btn-ai:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
-
-        .chapter-card { background: white; border-radius: 2rem; cursor: pointer; border: 3px solid #E0D9F7; transition: all 0.25s; overflow: hidden; }
-        .chapter-card:hover { border-color: var(--purple-light); box-shadow: 0 6px 24px rgba(107,33,232,0.15); }
-        .chapter-card.open { border-color: var(--green); box-shadow: 0 6px 24px rgba(126,211,33,0.2); }
-
-        .chapter-num-badge { background: var(--purple); color: white; border-radius: 999px; font-size: 9px; font-weight: 900; padding: 3px 10px; letter-spacing: 0.12em; text-transform: uppercase; display: inline-block; }
-        .chapter-card.open .chapter-num-badge { background: var(--green); color: var(--dark); }
-
-        .detail-content { display: none; margin-top: 1rem; padding-top: 1rem; border-top: 2px dashed #E0D9F7; }
-        .detail-content.open { display: block; animation: popIn 0.25s ease; }
-
-        .pill-label { display: inline-block; font-size: 9px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.2em; padding: 4px 12px; border-radius: 999px; margin-bottom: 10px; }
-        .pill-green  { background: var(--green);  color: var(--dark); }
-        .pill-purple { background: var(--purple); color: white; }
-        .pill-blue   { background: #3B82F6; color: white; }
-        .pill-orange { background: #F97316; color: white; }
-
-        .blob-tag { background: rgba(255,255,255,0.2); color: white; display: inline-block; padding: 5px 16px; border-radius: 0 999px 999px 999px; font-weight: 900; font-size: 0.7rem; letter-spacing: 0.05em; margin-bottom: 10px; }
-        .blob-tag-purple { background: var(--purple); color: white; display: inline-block; padding: 5px 16px; border-radius: 0 999px 999px 999px; font-weight: 900; font-size: 0.7rem; margin-bottom: 10px; }
-        .blob-tag-green  { background: var(--green); color: var(--dark); display: inline-block; padding: 6px 20px; border-radius: 999px 0 999px 999px; font-weight: 900; font-size: 0.72rem; }
-        .star-deco { position: absolute; opacity: 0.2; pointer-events: none; color: white; }
-
-        .ai-output {
-            background: linear-gradient(135deg, #1a0a3b 0%, #2d1060 100%);
-            border-radius: 1.5rem;
-            padding: 1.1rem 1.25rem;
-            margin-top: 10px;
-            border: 2px solid rgba(126,211,33,0.3);
-        }
-        .ai-output p { color: #e9d5ff; font-size: 0.78rem; font-weight: 700; line-height: 1.75; }
-        .ai-output .ai-label { font-size: 9px; font-weight: 900; color: var(--green); text-transform: uppercase; letter-spacing: 0.2em; margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
-        .ai-point { background: rgba(255,255,255,0.06); border-radius: 0.75rem; padding: 8px 12px; margin-bottom: 7px; color: #ddd6fe; font-size: 0.78rem; font-weight: 700; line-height: 1.6; border-left: 3px solid var(--green); }
-
-        .spin { display: inline-block; width: 12px; height: 12px; border: 2px solid rgba(255,255,255,0.3); border-top-color: white; border-radius: 50%; animation: spin 0.7s linear infinite; }
-        @keyframes spin { to { transform: rotate(360deg); } }
-
-        .modal-overlay { display: none; position: fixed; inset: 0; z-index: 200; background: rgba(26,10,59,0.6); backdrop-filter: blur(6px); align-items: center; justify-content: center; }
-        .modal-overlay.open { display: flex; animation: popIn 0.2s ease; }
-        .modal-box { background: white; border-radius: 2.5rem; padding: 2rem 1.75rem; width: 90%; max-width: 360px; box-shadow: 0 20px 60px rgba(107,33,232,0.35); border: 4px solid #E0D9F7; display: flex; flex-direction: column; gap: 1.25rem; }
-
-        .loading-dots span { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin: 0 3px; animation: bounce 1.2s infinite; }
-        .loading-dots span:nth-child(1) { background: var(--purple); }
-        .loading-dots span:nth-child(2) { background: var(--green); animation-delay: 0.2s; }
-        .loading-dots span:nth-child(3) { background: var(--purple); animation-delay: 0.4s; }
+        /* Floating SVG characters */
+        .float-chars-bg { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
+        @keyframes floatChar1 { 0%,100%{transform:translateY(0) rotate(-8deg) scale(1)} 50%{transform:translateY(-22px) rotate(6deg) scale(1.05)} }
+        @keyframes floatChar2 { 0%,100%{transform:translateY(0) rotate(5deg)} 50%{transform:translateY(-16px) rotate(-8deg)} }
+        @keyframes floatChar3 { 0%,100%{transform:translateY(0) rotate(-4deg)} 60%{transform:translateY(-20px) rotate(7deg)} }
+        @keyframes popIn { from{opacity:0;transform:scale(0.94) translateY(14px)} to{opacity:1;transform:scale(1) translateY(0)} }
+        @keyframes spin { to{transform:rotate(360deg)} }
         @keyframes bounce { 0%,80%,100%{transform:scale(0.6);opacity:0.5} 40%{transform:scale(1.2);opacity:1} }
 
-        label.field-label { display: block; font-size: 10px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.2em; color: var(--purple); margin-bottom: 8px; }
+        body::before { content:'';position:fixed;width:420px;height:420px;background:radial-gradient(circle,rgba(107,33,232,0.16),transparent 70%);border-radius:50%;top:-80px;right:-80px;pointer-events:none;z-index:0; }
+        body::after { content:'';position:fixed;width:300px;height:300px;background:radial-gradient(circle,rgba(126,211,33,0.13),transparent 70%);border-radius:50%;bottom:60px;left:-60px;pointer-events:none;z-index:0; }
 
-        .info-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 10px; }
-        .info-tag { background: #F5F3FF; color: var(--purple); border-radius: 999px; font-size: 10px; font-weight: 900; padding: 3px 12px; border: 2px solid #E0D9F7; }
-        .info-tag.green { background: #F0FDF0; color: #3D7A00; border-color: #BBF7D0; }
+        .page { display:none;min-height:100vh;position:relative;z-index:1; }
+        .page.active { display:flex;flex-direction:column;animation:popIn 0.35s cubic-bezier(.34,1.56,.64,1); }
 
-        /* Emotion characters in cards */
-        .emotion-char-sm {
-            display: inline-block;
-            font-size: 1.6rem;
-            animation: floatUpDown 3s ease-in-out infinite;
-        }
+        nav { position:fixed;top:0;left:0;right:0;z-index:100;background:var(--purple);display:flex;align-items:center;justify-content:space-between;padding:0 1.25rem;height:58px;box-shadow:0 4px 20px rgba(107,33,232,0.4); }
+        .nav-logo { font-family:'Righteous',cursive;font-size:1.2rem;color:white;cursor:pointer;display:flex;align-items:center;gap:8px; }
+        .nav-right { display:flex;align-items:center;gap:0.6rem; }
+        .lang-toggle { background:rgba(255,255,255,0.15);border-radius:999px;display:flex;align-items:center;padding:3px;cursor:pointer;border:2px solid rgba(255,255,255,0.25); }
+        .lang-btn { padding:3px 10px;border-radius:999px;font-size:10px;font-weight:900;letter-spacing:0.08em;transition:all 0.2s;color:rgba(255,255,255,0.6); }
+        .lang-btn.active { background:var(--green);color:var(--dark); }
+        .profile-btn { width:38px;height:38px;border-radius:50%;background:var(--green);border:3px solid rgba(255,255,255,0.4);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:900;color:var(--dark);transition:transform 0.2s;overflow:hidden; }
+        .profile-btn:hover { transform:scale(1.1) rotate(-5deg); }
+        .profile-btn img { width:100%;height:100%;object-fit:cover; }
 
-        /* Chapter title styling */
-        .chapter-title-text {
-            font-family: 'Righteous', cursive;
-            font-size: 0.95rem;
-            color: var(--dark);
-            margin-top: 4px;
-            line-height: 1.25;
-        }
+        .nav-icon-btn { background:rgba(255,255,255,0.15);border:none;border-radius:999px;padding:6px 10px;color:white;font-size:0.8rem;cursor:pointer;font-family:'Nunito',sans-serif;font-weight:900;transition:all 0.2s; }
+        .nav-icon-btn:hover { background:rgba(255,255,255,0.25); }
 
-        /* Synopsis block */
-        .synopsis-block {
-            background: linear-gradient(135deg, #F5F3FF, #EDE9FA);
-            border-radius: 1rem;
-            padding: 12px 14px;
-            font-size: 0.79rem;
-            font-weight: 700;
-            color: var(--dark);
-            line-height: 1.75;
-            border-left: 4px solid var(--purple);
-            margin-bottom: 10px;
-        }
+        .card-purple { background:var(--purple);border-radius:2.5rem;color:white;box-shadow:0 8px 32px rgba(107,33,232,0.3); }
+        .card-green  { background:var(--green);border-radius:2.5rem;color:var(--dark);box-shadow:0 8px 32px rgba(126,211,33,0.35); }
+        .card-white  { background:white;border-radius:2.5rem;box-shadow:0 4px 20px rgba(107,33,232,0.1); }
+        .card-dark   { background:var(--dark);border-radius:2.5rem;color:white;box-shadow:0 8px 32px rgba(26,10,59,0.3); }
 
-        .detail-event {
-            background: #FAF5FF;
-            border-radius: 1rem;
-            padding: 10px 13px;
-            font-size: 0.78rem;
-            font-weight: 700;
-            color: var(--dark);
-            line-height: 1.65;
-            margin-bottom: 7px;
-            border-left: 3px solid #C4B5E8;
-        }
+        textarea, select, input[type="text"] { background:white;border:3px solid #E0D9F7;border-radius:1.25rem;padding:0.9rem 1.1rem;font-family:'Nunito',sans-serif;font-size:0.85rem;font-weight:700;color:var(--dark);width:100%;outline:none;transition:border-color 0.2s,box-shadow 0.2s; }
+        textarea:focus, select:focus, input[type="text"]:focus { border-color:var(--purple-light);box-shadow:0 0 0 4px rgba(168,85,247,0.15); }
+        textarea::placeholder, input::placeholder { color:#C4B5E8;font-weight:700; }
 
-        /* Home decorative characters */
-        .home-chars {
-            display: flex;
-            justify-content: center;
-            gap: 8px;
-            flex-wrap: wrap;
-            padding: 0.5rem 0;
-        }
-        .home-char-bubble {
-            width: 52px; height: 52px;
-            border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 1.8rem;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-            animation: floatUpDown 3s ease-in-out infinite;
-            border: 3px solid white;
-        }
+        .btn-green { background:var(--green);color:var(--dark);border:none;border-radius:999px;font-family:'Nunito',sans-serif;font-weight:900;font-size:0.9rem;padding:0.9rem 1.75rem;cursor:pointer;transition:transform 0.15s,box-shadow 0.2s;box-shadow:0 4px 14px rgba(126,211,33,0.5);display:inline-flex;align-items:center;gap:6px;width:100%;justify-content:center; }
+        .btn-green:hover { transform:scale(1.03);box-shadow:0 6px 20px rgba(126,211,33,0.6); }
+        .btn-back { background:white;color:var(--purple);border:3px solid #E0D9F7;border-radius:999px;font-family:'Nunito',sans-serif;font-weight:900;font-size:0.8rem;padding:6px 16px;cursor:pointer;transition:all 0.2s; }
+        .btn-back:hover { background:#EDE9FA; }
+        .btn-red { background:#FEF2F2;color:#DC2626;border:2px solid #FECACA;border-radius:999px;font-family:'Nunito',sans-serif;font-weight:900;font-size:0.72rem;padding:6px 14px;cursor:pointer; }
 
-        .nav-char { font-size: 1.3rem; }
+        .btn-ai { background:var(--purple);color:white;border:none;border-radius:999px;font-family:'Nunito',sans-serif;font-weight:900;font-size:0.75rem;padding:8px 18px;cursor:pointer;transition:all 0.2s;box-shadow:0 3px 10px rgba(107,33,232,0.35);display:inline-flex;align-items:center;gap:5px; }
+        .btn-ai:hover { transform:scale(1.05);box-shadow:0 5px 16px rgba(107,33,232,0.5); }
+        .btn-ai:disabled { opacity:0.5;cursor:not-allowed;transform:none; }
 
-        .char-mascot-panel {
-            position: relative;
-            overflow: hidden;
-        }
-        .char-mascot-panel .mascot-bg-char {
-            position: absolute;
-            font-size: 5rem;
-            opacity: 0.12;
-            right: -10px;
-            bottom: -10px;
-            animation: floatUpDown 4s ease-in-out infinite;
-        }
+        label.field-label { display:block;font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:0.2em;color:var(--purple);margin-bottom:8px; }
+
+        .pill-label { display:inline-block;font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:0.2em;padding:4px 12px;border-radius:999px;margin-bottom:10px; }
+        .pill-green  { background:var(--green);color:var(--dark); }
+        .pill-purple { background:var(--purple);color:white; }
+        .pill-blue   { background:#3B82F6;color:white; }
+        .pill-orange { background:#F97316;color:white; }
+        .pill-teal   { background:#14B8A6;color:white; }
+        .pill-red    { background:#E8433C;color:white; }
+
+        .blob-tag { background:rgba(255,255,255,0.2);color:white;display:inline-block;padding:5px 16px;border-radius:0 999px 999px 999px;font-weight:900;font-size:0.7rem;letter-spacing:0.05em;margin-bottom:10px; }
+        .blob-tag-purple { background:var(--purple);color:white;display:inline-block;padding:5px 16px;border-radius:0 999px 999px 999px;font-weight:900;font-size:0.7rem;margin-bottom:10px; }
+        .blob-tag-green  { background:var(--green);color:var(--dark);display:inline-block;padding:6px 20px;border-radius:999px 0 999px 999px;font-weight:900;font-size:0.72rem; }
+        .star-deco { position:absolute;opacity:0.18;pointer-events:none;color:white; }
+
+        .chapter-card { background:white;border-radius:2rem;cursor:pointer;border:3px solid #E0D9F7;transition:all 0.25s;overflow:hidden; }
+        .chapter-card:hover { border-color:var(--purple-light);box-shadow:0 6px 24px rgba(107,33,232,0.15); }
+        .chapter-card.open { border-color:var(--green);box-shadow:0 6px 24px rgba(126,211,33,0.2); }
+        .chapter-num-badge { background:var(--purple);color:white;border-radius:999px;font-size:9px;font-weight:900;padding:3px 10px;letter-spacing:0.12em;text-transform:uppercase;display:inline-block; }
+        .chapter-card.open .chapter-num-badge { background:var(--green);color:var(--dark); }
+        .chapter-title-text { font-family:'Righteous',cursive;font-size:0.95rem;color:var(--dark);margin-top:4px;line-height:1.25; }
+
+        .detail-content { display:none;margin-top:1rem;padding-top:1rem;border-top:2px dashed #E0D9F7; }
+        .detail-content.open { display:block;animation:popIn 0.25s ease; }
+
+        .ai-output { background:linear-gradient(135deg,#1a0a3b 0%,#2d1060 100%);border-radius:1.5rem;padding:1.1rem 1.25rem;margin-top:10px;border:2px solid rgba(126,211,33,0.3); }
+        .ai-output .ai-label { font-size:9px;font-weight:900;color:var(--green);text-transform:uppercase;letter-spacing:0.2em;margin-bottom:8px;display:flex;align-items:center;gap:6px; }
+        .ai-point { background:rgba(255,255,255,0.06);border-radius:0.75rem;padding:10px 12px;margin-bottom:8px;color:#ddd6fe;font-size:0.79rem;font-weight:700;line-height:1.7;border-left:3px solid var(--green); }
+        .ai-point-label { font-size:8px;color:var(--green);font-weight:900;letter-spacing:0.18em;text-transform:uppercase;margin-bottom:5px; }
+
+        .spin { display:inline-block;width:12px;height:12px;border:2px solid rgba(255,255,255,0.3);border-top-color:white;border-radius:50%;animation:spin 0.7s linear infinite; }
+        .loading-dots span { display:inline-block;width:10px;height:10px;border-radius:50%;margin:0 3px;animation:bounce 1.2s infinite; }
+        .loading-dots span:nth-child(1){background:var(--purple);}
+        .loading-dots span:nth-child(2){background:var(--green);animation-delay:0.2s;}
+        .loading-dots span:nth-child(3){background:var(--purple);animation-delay:0.4s;}
+
+        .modal-overlay { display:none;position:fixed;inset:0;z-index:200;background:rgba(26,10,59,0.65);backdrop-filter:blur(8px);align-items:center;justify-content:center; }
+        .modal-overlay.open { display:flex;animation:popIn 0.2s ease; }
+        .modal-box { background:white;border-radius:2.5rem;padding:2rem 1.75rem;width:92%;max-width:380px;box-shadow:0 20px 60px rgba(107,33,232,0.4);border:4px solid #E0D9F7;display:flex;flex-direction:column;gap:1.25rem;max-height:90vh;overflow-y:auto; }
+
+        .info-row { display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px; }
+        .info-tag { background:#F5F3FF;color:var(--purple);border-radius:999px;font-size:10px;font-weight:900;padding:3px 12px;border:2px solid #E0D9F7; }
+        .info-tag.green { background:#F0FDF0;color:#3D7A00;border-color:#BBF7D0; }
+        .info-tag.orange { background:#FFF7ED;color:#C2410C;border-color:#FED7AA; }
+
+        .synopsis-block { background:linear-gradient(135deg,#F5F3FF,#EDE9FA);border-radius:1rem;padding:13px 15px;font-size:0.79rem;font-weight:700;color:var(--dark);line-height:1.78;border-left:4px solid var(--purple);margin-bottom:10px; }
+        .detail-event { background:#FAF5FF;border-radius:1rem;padding:10px 13px;font-size:0.79rem;font-weight:700;color:var(--dark);line-height:1.68;margin-bottom:7px;border-left:3px solid #C4B5E8; }
+
+        /* Setting detail blocks */
+        .setting-detail-block { border-radius:1rem;padding:11px 14px;font-size:0.79rem;font-weight:700;line-height:1.75;margin-bottom:8px; }
+
+        /* History card */
+        .history-card { background:white;border-radius:1.5rem;border:3px solid #E0D9F7;padding:1rem 1.1rem;display:flex;align-items:flex-start;gap:10px;cursor:pointer;transition:all 0.2s; }
+        .history-card:hover { border-color:var(--purple-light);box-shadow:0 4px 16px rgba(107,33,232,0.12); }
+        .history-card-icon { width:40px;height:40px;border-radius:999px;display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0; }
+
+        /* Photo upload area */
+        .photo-upload-area { width:90px;height:90px;border-radius:50%;background:#F5F3FF;border:4px dashed #C4B5E8;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;transition:all 0.2s;overflow:hidden;margin:0 auto; }
+        .photo-upload-area:hover { border-color:var(--purple-light);background:#EDE9FA; }
+        .photo-upload-area img { width:100%;height:100%;object-fit:cover; }
+
+        /* Character mascots SVG */
+        .mascot-row { display:flex;justify-content:center;gap:6px;flex-wrap:wrap; }
+        .mascot-item { display:flex;flex-direction:column;align-items:center;gap:4px; }
+        .mascot-item span { font-size:9px;font-weight:900;color:var(--purple);letter-spacing:0.05em; }
     </style>
 </head>
 <body>
 
-<!-- Floating background characters -->
-<div class="float-char" style="top:15%;left:3%;opacity:0.18;">😡</div>
-<div class="float-char" style="top:40%;right:4%;opacity:0.15;">😢</div>
-<div class="float-char" style="top:70%;left:5%;opacity:0.15;">😨</div>
-<div class="float-char" style="top:60%;right:6%;opacity:0.18;">🤢</div>
-<div class="float-char" style="top:25%;right:8%;opacity:0.15;">😄</div>
+<!-- Background floating characters (SVG-style) -->
+<div class="float-chars-bg" aria-hidden="true">
+    <!-- Joy -->
+    <svg style="position:absolute;top:12%;left:2%;width:52px;opacity:0.13;animation:floatChar1 4.5s ease-in-out infinite;" viewBox="0 0 60 80" fill="none">
+        <ellipse cx="30" cy="32" rx="22" ry="26" fill="#FFD700"/>
+        <circle cx="21" cy="28" r="4" fill="white"/><circle cx="21" cy="28" r="2.5" fill="#1a0a3b"/>
+        <circle cx="39" cy="28" r="4" fill="white"/><circle cx="39" cy="28" r="2.5" fill="#1a0a3b"/>
+        <path d="M20 40 Q30 50 40 40" stroke="#1a0a3b" stroke-width="3" stroke-linecap="round" fill="none"/>
+        <ellipse cx="30" cy="10" rx="14" ry="8" fill="#7ED321"/>
+        <rect x="22" y="56" width="16" height="22" rx="8" fill="#FFEB3B"/>
+    </svg>
+    <!-- Sadness -->
+    <svg style="position:absolute;top:38%;right:3%;width:44px;opacity:0.12;animation:floatChar2 5.5s ease-in-out infinite;" viewBox="0 0 60 80" fill="none">
+        <ellipse cx="30" cy="32" rx="22" ry="26" fill="#64B5F6"/>
+        <circle cx="21" cy="30" r="4" fill="white"/><circle cx="21" cy="30" r="2.2" fill="#1a0a3b"/>
+        <circle cx="39" cy="30" r="4" fill="white"/><circle cx="39" cy="30" r="2.2" fill="#1a0a3b"/>
+        <path d="M20 44 Q30 36 40 44" stroke="#1a0a3b" stroke-width="3" stroke-linecap="round" fill="none"/>
+        <rect x="22" y="56" width="16" height="22" rx="8" fill="#90CAF9"/>
+        <path d="M14 22 Q16 14 24 16" stroke="#90CAF9" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    </svg>
+    <!-- Anger -->
+    <svg style="position:absolute;top:65%;left:3%;width:40px;opacity:0.12;animation:floatChar3 3.8s ease-in-out infinite;" viewBox="0 0 60 75" fill="none">
+        <rect x="8" y="14" width="44" height="42" rx="12" fill="#E8433C"/>
+        <circle cx="21" cy="34" r="4" fill="white"/><circle cx="21" cy="34" r="2.5" fill="#1a0a3b"/>
+        <circle cx="39" cy="34" r="4" fill="white"/><circle cx="39" cy="34" r="2.5" fill="#1a0a3b"/>
+        <path d="M22 46 Q30 40 38 46" stroke="#1a0a3b" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+        <path d="M13 18 L22 24 M47 18 L38 24" stroke="#C0392B" stroke-width="3" stroke-linecap="round"/>
+        <rect x="24" y="54" width="12" height="18" rx="6" fill="#E8433C"/>
+        <path d="M20 10 Q30 2 40 10" stroke="#FF6B35" stroke-width="6" stroke-linecap="round" fill="none"/>
+    </svg>
+    <!-- Fear -->
+    <svg style="position:absolute;top:22%;right:5%;width:38px;opacity:0.11;animation:floatChar1 6s ease-in-out infinite;animation-delay:1s;" viewBox="0 0 60 80" fill="none">
+        <ellipse cx="30" cy="35" rx="18" ry="28" fill="#9C59D1"/>
+        <circle cx="22" cy="32" r="5" fill="white"/><circle cx="22" cy="32" r="3" fill="#1a0a3b"/>
+        <circle cx="38" cy="32" r="5" fill="white"/><circle cx="38" cy="32" r="3" fill="#1a0a3b"/>
+        <path d="M22 46 Q30 42 38 46" stroke="#1a0a3b" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+        <path d="M24 12 Q26 4 30 8 Q34 2 36 10" stroke="#B39DDB" stroke-width="2" fill="none" stroke-linecap="round"/>
+    </svg>
+    <!-- Disgust -->
+    <svg style="position:absolute;top:55%;right:4%;width:40px;opacity:0.11;animation:floatChar2 4.2s ease-in-out infinite;animation-delay:0.5s;" viewBox="0 0 60 80" fill="none">
+        <ellipse cx="30" cy="34" rx="20" ry="26" fill="#4CAF50"/>
+        <circle cx="21" cy="30" r="4" fill="white"/><circle cx="21" cy="30" r="2.5" fill="#1a0a3b"/>
+        <circle cx="39" cy="30" r="4" fill="white"/><circle cx="39" cy="30" r="2.5" fill="#1a0a3b"/>
+        <path d="M22 44 Q30 38 38 44" stroke="#1a0a3b" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+        <path d="M14 24 Q18 18 26 22 M34 22 Q42 18 46 24" stroke="#388E3C" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+        <rect x="22" y="58" width="16" height="20" rx="8" fill="#66BB6A"/>
+    </svg>
+</div>
 
 <nav>
-    <div class="nav-logo" onclick="goHome()">✍️ NovelConsult <span class="nav-char">✨</span></div>
+    <div class="nav-logo" onclick="goHome()">✍️ NovelConsult</div>
     <div class="nav-right">
+        <button class="nav-icon-btn" onclick="showPage('page-history')" title="Histori">📚</button>
         <div class="lang-toggle" onclick="toggleLang()">
             <div class="lang-btn active" id="btn-id">ID</div>
             <div class="lang-btn" id="btn-en">EN</div>
         </div>
-        <div class="profile-btn" id="profile-avatar" onclick="openProfile()"><span id="profile-initials">?</span></div>
+        <div class="profile-btn" id="profile-avatar-btn" onclick="openProfile()">
+            <img id="profile-photo-nav" src="" alt="" style="display:none;width:100%;height:100%;object-fit:cover;border-radius:50%;">
+            <span id="profile-initials">?</span>
+        </div>
     </div>
 </nav>
 
-<!-- PAGE 1: HOME -->
+<!-- ═══ PAGE HOME ═══ -->
 <div class="page active" id="page-home" style="padding-top:58px;">
-    <div style="padding:1.25rem 1rem 2rem;max-width:440px;margin:0 auto;width:100%;display:flex;flex-direction:column;gap:1rem;">
+    <div style="padding:1.25rem 1rem 5rem;max-width:440px;margin:0 auto;width:100%;display:flex;flex-direction:column;gap:1rem;">
 
-        <!-- Hero card -->
-        <div class="card-purple char-mascot-panel" style="padding:1.75rem;position:relative;overflow:hidden;">
+        <!-- Hero -->
+        <div class="card-purple" style="padding:1.75rem;position:relative;overflow:hidden;">
             <span class="star-deco" style="top:10px;right:22px;font-size:1.8rem;">✦</span>
             <span class="star-deco" style="bottom:12px;left:28px;font-size:1rem;">✦</span>
-            <div class="mascot-bg-char">😄</div>
-            <div class="blob-tag" id="txt-sub-header">Deep Narrative Architect</div>
-            <h1 style="font-family:'Righteous',cursive;font-size:2.5rem;line-height:1.05;color:white;">Novel<br>Consult</h1>
-            <p style="font-size:0.83rem;color:rgba(255,255,255,0.78);margin-top:10px;font-weight:700;" id="txt-tagline">Bangun outline novel kamu secara mendalam ✨</p>
-        </div>
-
-        <!-- Emotion characters row -->
-        <div class="card-white" style="padding:1rem;">
-            <p style="font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:0.2em;color:var(--purple);text-align:center;margin-bottom:10px;">Emosi Penulismu Hari Ini 🎭</p>
-            <div class="home-chars">
-                <div class="home-char-bubble" style="background:#FFEEDD;animation-delay:0s;" title="Anger">😡</div>
-                <div class="home-char-bubble" style="background:#E8E0FA;animation-delay:0.5s;" title="Fear">😨</div>
-                <div class="home-char-bubble" style="background:#FFF0F0;animation-delay:1s;" title="Sadness">😢</div>
-                <div class="home-char-bubble" style="background:#FFFDE0;animation-delay:1.5s;" title="Joy">😄</div>
-                <div class="home-char-bubble" style="background:#E8FAE8;animation-delay:2s;" title="Disgust">🤢</div>
-                <div class="home-char-bubble" style="background:#FFF0FF;animation-delay:2.5s;" title="Anxiety">😰</div>
+            <!-- Mascot characters row in hero -->
+            <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;">
+                <!-- Mini Joy -->
+                <svg width="38" height="46" viewBox="0 0 60 80" style="filter:drop-shadow(0 4px 8px rgba(0,0,0,0.3));animation:floatChar1 3.5s ease-in-out infinite;">
+                    <ellipse cx="30" cy="32" rx="22" ry="26" fill="#FFD700"/>
+                    <circle cx="21" cy="28" r="4" fill="white"/><circle cx="21" cy="28" r="2.5" fill="#1a0a3b"/>
+                    <circle cx="39" cy="28" r="4" fill="white"/><circle cx="39" cy="28" r="2.5" fill="#1a0a3b"/>
+                    <path d="M20 40 Q30 50 40 40" stroke="#1a0a3b" stroke-width="3" stroke-linecap="round" fill="none"/>
+                    <ellipse cx="30" cy="10" rx="14" ry="8" fill="#7ED321"/>
+                </svg>
+                <!-- Mini Anger -->
+                <svg width="34" height="42" viewBox="0 0 60 75" style="filter:drop-shadow(0 4px 8px rgba(0,0,0,0.3));animation:floatChar2 4s ease-in-out infinite;animation-delay:0.5s;">
+                    <rect x="8" y="14" width="44" height="42" rx="12" fill="#E8433C"/>
+                    <circle cx="21" cy="34" r="4" fill="white"/><circle cx="21" cy="34" r="2.5" fill="white"/>
+                    <circle cx="39" cy="34" r="4" fill="white"/><circle cx="39" cy="34" r="2.5" fill="white"/>
+                    <path d="M22 46 Q30 40 38 46" stroke="white" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+                    <path d="M13 18 L22 24 M47 18 L38 24" stroke="#FF6B35" stroke-width="3" stroke-linecap="round"/>
+                </svg>
+                <!-- Mini Sadness -->
+                <svg width="34" height="44" viewBox="0 0 60 80" style="filter:drop-shadow(0 4px 8px rgba(0,0,0,0.3));animation:floatChar3 4.8s ease-in-out infinite;animation-delay:1s;">
+                    <ellipse cx="30" cy="32" rx="22" ry="26" fill="#64B5F6"/>
+                    <circle cx="21" cy="30" r="4" fill="white"/><circle cx="21" cy="30" r="2.2" fill="#1a0a3b"/>
+                    <circle cx="39" cy="30" r="4" fill="white"/><circle cx="39" cy="30" r="2.2" fill="#1a0a3b"/>
+                    <path d="M20 44 Q30 36 40 44" stroke="#1a0a3b" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+                </svg>
+                <!-- Mini Fear -->
+                <svg width="30" height="42" viewBox="0 0 60 80" style="filter:drop-shadow(0 4px 8px rgba(0,0,0,0.3));animation:floatChar1 5.2s ease-in-out infinite;animation-delay:1.5s;">
+                    <ellipse cx="30" cy="35" rx="18" ry="28" fill="#9C59D1"/>
+                    <circle cx="22" cy="32" r="5" fill="white"/><circle cx="22" cy="32" r="3" fill="#1a0a3b"/>
+                    <circle cx="38" cy="32" r="5" fill="white"/><circle cx="38" cy="32" r="3" fill="#1a0a3b"/>
+                    <path d="M22 46 Q30 42 38 46" stroke="#1a0a3b" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+                </svg>
+                <!-- Mini Disgust -->
+                <svg width="32" height="44" viewBox="0 0 60 80" style="filter:drop-shadow(0 4px 8px rgba(0,0,0,0.3));animation:floatChar2 3.8s ease-in-out infinite;animation-delay:2s;">
+                    <ellipse cx="30" cy="34" rx="20" ry="26" fill="#4CAF50"/>
+                    <circle cx="21" cy="30" r="4" fill="white"/><circle cx="21" cy="30" r="2.5" fill="#1a0a3b"/>
+                    <circle cx="39" cy="30" r="4" fill="white"/><circle cx="39" cy="30" r="2.5" fill="#1a0a3b"/>
+                    <path d="M22 44 Q30 38 38 44" stroke="#1a0a3b" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+                </svg>
             </div>
+            <div class="blob-tag" id="txt-sub-header">Deep Narrative Architect</div>
+            <h1 style="font-family:'Righteous',cursive;font-size:2.4rem;line-height:1.05;color:white;">Novel<br>Consult</h1>
+            <p style="font-size:0.83rem;color:rgba(255,255,255,0.78);margin-top:8px;font-weight:700;" id="txt-tagline">Bangun outline novel kamu secara mendalam ✨</p>
         </div>
 
         <!-- Form -->
         <div class="card-white" style="padding:1.5rem;display:flex;flex-direction:column;gap:1rem;">
             <div>
                 <label class="field-label" id="lbl-idea">Premis atau Ide Utama</label>
-                <textarea id="user-idea" rows="4" placeholder="Masukkan ide cerita kamu..."></textarea>
+                <textarea id="user-idea" rows="4" placeholder="Tuliskan premis atau ide utama ceritamu..."></textarea>
             </div>
-            <div>
-                <label class="field-label" id="lbl-genre">Genre Cerita</label>
-                <select id="genre-select">
-                    <option value="fantasi">🧙 Fantasi</option>
-                    <option value="romance">💕 Romance</option>
-                    <option value="thriller">🔪 Thriller / Misteri</option>
-                    <option value="sci-fi">🚀 Sci-Fi</option>
-                    <option value="drama">🎭 Drama</option>
-                    <option value="horor">👻 Horor</option>
-                    <option value="petualangan">⚔️ Petualangan</option>
-                    <option value="slice-of-life">🌸 Slice of Life</option>
-                </select>
-            </div>
-            <div>
-                <label class="field-label" id="lbl-chapters">Jumlah Bab</label>
-                <select id="total-chapters">
-                    <option value="5">5 Bab (Singkat)</option>
-                    <option value="10">10 Bab (Sedang)</option>
-                    <option value="20">20 Bab (Panjang)</option>
-                </select>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+                <div>
+                    <label class="field-label" id="lbl-genre">Genre</label>
+                    <select id="genre-select">
+                        <option value="fantasi">🧙 Fantasi</option>
+                        <option value="romance">💕 Romance</option>
+                        <option value="thriller">🔪 Thriller</option>
+                        <option value="sci-fi">🚀 Sci-Fi</option>
+                        <option value="drama">🎭 Drama</option>
+                        <option value="horor">👻 Horor</option>
+                        <option value="petualangan">⚔️ Petualangan</option>
+                        <option value="slice-of-life">🌸 Slice of Life</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="field-label" id="lbl-chapters">Jumlah Bab</label>
+                    <select id="total-chapters">
+                        <option value="5">5 Bab</option>
+                        <option value="10">10 Bab</option>
+                        <option value="20">20 Bab</option>
+                    </select>
+                </div>
             </div>
         </div>
         <button class="btn-green" onclick="generateOutline()" id="btn-generate">⚡ Generate Outline Detail</button>
-        <div style="text-align:center;"><span class="blob-tag-green" id="txt-hint">Klik tiap bab untuk lihat detail cerita</span></div>
+        <div style="text-align:center;"><span class="blob-tag-green" id="txt-hint">Klik tiap bab untuk lihat detail lengkap</span></div>
     </div>
 </div>
 
-<!-- PAGE 2: RESULT -->
+<!-- ═══ PAGE RESULT ═══ -->
 <div class="page" id="page-result" style="padding-top:58px;">
-    <div style="padding:1.25rem 1rem 2rem;max-width:440px;margin:0 auto;width:100%;display:flex;flex-direction:column;gap:1rem;">
-        <div class="card-green char-mascot-panel" style="padding:1.5rem;position:relative;overflow:hidden;">
+    <div style="padding:1.25rem 1rem 5rem;max-width:440px;margin:0 auto;width:100%;display:flex;flex-direction:column;gap:1rem;">
+        <div class="card-green" style="padding:1.5rem;position:relative;overflow:hidden;">
             <span class="star-deco" style="top:8px;right:18px;font-size:1.4rem;color:var(--dark);">✦</span>
-            <div class="mascot-bg-char" style="color:#3D7A00;">📖</div>
             <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;">
                 <div>
                     <div class="blob-tag-purple" id="txt-result-label">Master Plot</div>
                     <h2 style="font-family:'Righteous',cursive;font-size:1.7rem;color:var(--dark);line-height:1.1;" id="txt-result-title">Character Bible</h2>
-                    <p id="result-idea-preview" style="font-size:0.72rem;font-weight:700;color:rgba(26,10,59,0.6);margin-top:4px;"></p>
+                    <p id="result-idea-preview" style="font-size:0.72rem;font-weight:700;color:rgba(26,10,59,0.55);margin-top:4px;max-width:220px;"></p>
                 </div>
                 <button class="btn-back" onclick="goHome()" id="btn-back">← Kembali</button>
             </div>
         </div>
-        <div id="loading-state" class="card-white" style="padding:2.5rem;text-align:center;display:flex;flex-direction:column;align-items:center;gap:1rem;">
-            <div style="font-size:3rem;animation:floatUpDown 1.5s ease-in-out infinite;">🤔</div>
+        <div id="loading-state" class="card-white" style="padding:3rem;text-align:center;display:flex;flex-direction:column;align-items:center;gap:1.2rem;">
+            <!-- Animated characters loading -->
+            <div style="display:flex;gap:12px;justify-content:center;">
+                <svg width="36" height="44" viewBox="0 0 60 80" style="animation:floatChar1 1.8s ease-in-out infinite;">
+                    <ellipse cx="30" cy="32" rx="22" ry="26" fill="#FFD700"/>
+                    <circle cx="21" cy="28" r="4" fill="white"/><circle cx="21" cy="28" r="2.5" fill="#1a0a3b"/>
+                    <circle cx="39" cy="28" r="4" fill="white"/><circle cx="39" cy="28" r="2.5" fill="#1a0a3b"/>
+                    <path d="M20 40 Q30 50 40 40" stroke="#1a0a3b" stroke-width="3" stroke-linecap="round" fill="none"/>
+                    <ellipse cx="30" cy="10" rx="14" ry="8" fill="#7ED321"/>
+                </svg>
+                <svg width="30" height="40" viewBox="0 0 60 75" style="animation:floatChar2 1.8s ease-in-out infinite;animation-delay:0.4s;">
+                    <rect x="8" y="14" width="44" height="42" rx="12" fill="#E8433C"/>
+                    <circle cx="21" cy="34" r="4" fill="white"/><circle cx="39" cy="34" r="4" fill="white"/>
+                    <path d="M22 46 Q30 40 38 46" stroke="white" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+                </svg>
+                <svg width="30" height="42" viewBox="0 0 60 80" style="animation:floatChar3 1.8s ease-in-out infinite;animation-delay:0.8s;">
+                    <ellipse cx="30" cy="32" rx="22" ry="26" fill="#64B5F6"/>
+                    <circle cx="21" cy="30" r="4" fill="white"/><circle cx="39" cy="30" r="4" fill="white"/>
+                    <path d="M20 44 Q30 36 40 44" stroke="#1a0a3b" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+                </svg>
+            </div>
             <div class="loading-dots"><span></span><span></span><span></span></div>
             <p style="font-weight:900;color:var(--purple);font-size:0.9rem;" id="txt-generating">Sedang membangun outline...</p>
         </div>
@@ -325,108 +363,399 @@
     </div>
 </div>
 
-<!-- PROFILE MODAL -->
+<!-- ═══ PAGE HISTORY ═══ -->
+<div class="page" id="page-history" style="padding-top:58px;">
+    <div style="padding:1.25rem 1rem 5rem;max-width:440px;margin:0 auto;width:100%;display:flex;flex-direction:column;gap:1rem;">
+        <div class="card-dark" style="padding:1.5rem;position:relative;overflow:hidden;">
+            <span class="star-deco" style="top:10px;right:20px;font-size:1.6rem;">✦</span>
+            <div style="display:flex;align-items:center;justify-content:space-between;">
+                <div>
+                    <div class="blob-tag">Jejak Kreativitasmu</div>
+                    <h2 style="font-family:'Righteous',cursive;font-size:1.8rem;color:white;" id="txt-history-title">Histori Ide</h2>
+                </div>
+                <button class="btn-back" onclick="goHome()" id="btn-back-history">← Kembali</button>
+            </div>
+        </div>
+        <div id="history-list" style="display:flex;flex-direction:column;gap:0.75rem;"></div>
+        <div id="history-empty" class="card-white" style="padding:2.5rem;text-align:center;display:none;">
+            <div style="font-size:3rem;margin-bottom:12px;">📭</div>
+            <p style="font-weight:900;color:var(--purple);font-size:0.9rem;" id="txt-history-empty">Belum ada ide yang tersimpan.</p>
+            <p style="font-size:0.75rem;color:#9CA3AF;font-weight:700;margin-top:6px;" id="txt-history-empty-sub">Generate outline pertamamu sekarang!</p>
+        </div>
+        <button id="btn-clear-history" class="btn-red" onclick="clearHistory()" style="display:none;width:100%;padding:10px;" id="btn-clear">🗑️ Hapus Semua Histori</button>
+    </div>
+</div>
+
+<!-- ═══ PROFILE MODAL ═══ -->
 <div class="modal-overlay" id="profile-modal" onclick="closeProfileIfOutside(event)">
     <div class="modal-box">
         <div style="display:flex;align-items:center;justify-content:space-between;">
             <div>
-                <p style="font-family:'Righteous',cursive;font-size:1.25rem;color:var(--purple);" id="txt-profile-title">Profil Saya</p>
-                <p style="font-size:10px;font-weight:700;color:#9CA3AF;letter-spacing:0.15em;text-transform:uppercase;" id="txt-profile-sub">Ubah nama kamu</p>
+                <p style="font-family:'Righteous',cursive;font-size:1.3rem;color:var(--purple);" id="txt-profile-title">Profil Saya</p>
+                <p style="font-size:10px;font-weight:700;color:#9CA3AF;letter-spacing:0.15em;text-transform:uppercase;" id="txt-profile-sub">Personalisasi akunmu</p>
             </div>
             <button onclick="closeProfile()" style="background:#EDE9FA;border:none;border-radius:50%;width:32px;height:32px;cursor:pointer;font-size:1rem;color:var(--purple);font-weight:900;display:flex;align-items:center;justify-content:center;">✕</button>
         </div>
-        <div style="display:flex;justify-content:center;">
-            <div id="modal-initials" style="width:74px;height:74px;border-radius:50%;background:var(--purple);display:flex;align-items:center;justify-content:center;font-family:'Righteous',cursive;font-size:1.7rem;color:white;border:5px solid var(--green);">?</div>
+
+        <!-- Photo upload -->
+        <div style="display:flex;flex-direction:column;align-items:center;gap:10px;">
+            <input type="file" id="photo-input" accept="image/*" style="display:none" onchange="handlePhotoUpload(event)">
+            <div class="photo-upload-area" onclick="document.getElementById('photo-input').click()" id="photo-upload-area">
+                <img id="modal-photo-preview" src="" alt="" style="display:none;width:100%;height:100%;object-fit:cover;border-radius:50%;">
+                <div id="photo-placeholder">
+                    <div id="modal-initials" style="font-family:'Righteous',cursive;font-size:1.8rem;color:var(--purple);">?</div>
+                    <p style="font-size:9px;font-weight:900;color:var(--purple);margin-top:4px;text-align:center;" id="txt-tap-photo">Ketuk untuk foto</p>
+                </div>
+            </div>
+            <button onclick="document.getElementById('photo-input').click()" style="background:#F5F3FF;border:2px solid #E0D9F7;border-radius:999px;padding:6px 16px;font-family:'Nunito',sans-serif;font-size:0.72rem;font-weight:900;color:var(--purple);cursor:pointer;" id="btn-choose-photo">📷 Pilih dari Galeri</button>
         </div>
+
+        <!-- Name input -->
         <div>
             <label class="field-label" id="lbl-name">Nama Kamu</label>
             <input type="text" id="profile-name-input" placeholder="Masukkan nama kamu..." oninput="previewName()" maxlength="30">
         </div>
-        <button class="btn-green" onclick="saveName()" id="btn-save-name">💾 Simpan</button>
+
+        <!-- Install to homescreen -->
+        <div style="background:#F5F3FF;border-radius:1.25rem;padding:12px 14px;border:2px solid #E0D9F7;">
+            <p style="font-size:9px;font-weight:900;color:var(--purple);text-transform:uppercase;letter-spacing:0.18em;margin-bottom:6px;">📱 Tambah ke Beranda</p>
+            <p style="font-size:0.75rem;font-weight:700;color:#6B7280;margin-bottom:8px;" id="txt-install-desc">Simpan NovelConsult di layar beranda ponselmu untuk akses cepat!</p>
+            <button onclick="triggerInstall()" style="background:var(--purple);color:white;border:none;border-radius:999px;font-family:'Nunito',sans-serif;font-weight:900;font-size:0.72rem;padding:7px 16px;cursor:pointer;width:100%;" id="btn-install-home">📲 Install ke Beranda</button>
+        </div>
+
+        <button class="btn-green" onclick="saveName()" id="btn-save-name">💾 Simpan Profil</button>
     </div>
 </div>
 
+<!-- iOS Install Guide -->
+<div id="ios-install-guide" class="hidden">
+    <div class="ios-guide-box">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+            <p style="font-family:'Righteous',cursive;font-size:1.2rem;color:var(--purple);">Tambah ke Beranda</p>
+            <button onclick="document.getElementById('ios-install-guide').classList.add('hidden')" style="background:#EDE9FA;border:none;border-radius:50%;width:32px;height:32px;cursor:pointer;font-size:1rem;color:var(--purple);font-weight:900;">✕</button>
+        </div>
+        <div class="ios-step">
+            <div class="ios-step-num">1</div>
+            <div>
+                <p style="font-weight:900;font-size:0.83rem;color:var(--dark);">Ketuk tombol Share</p>
+                <p style="font-size:0.73rem;color:#6B7280;font-weight:700;">Ikon kotak dengan panah ke atas di Safari</p>
+            </div>
+            <span style="font-size:1.4rem;margin-left:auto;">⬆️</span>
+        </div>
+        <div class="ios-step">
+            <div class="ios-step-num">2</div>
+            <div>
+                <p style="font-weight:900;font-size:0.83rem;color:var(--dark);">Pilih "Add to Home Screen"</p>
+                <p style="font-size:0.73rem;color:#6B7280;font-weight:700;">Scroll ke bawah di menu share</p>
+            </div>
+            <span style="font-size:1.4rem;margin-left:auto;">➕</span>
+        </div>
+        <div class="ios-step" style="border:none;">
+            <div class="ios-step-num">3</div>
+            <div>
+                <p style="font-weight:900;font-size:0.83rem;color:var(--dark);">Ketuk "Add" / "Tambahkan"</p>
+                <p style="font-size:0.73rem;color:#6B7280;font-weight:700;">NovelConsult akan muncul di beranda</p>
+            </div>
+            <span style="font-size:1.4rem;margin-left:auto;">✅</span>
+        </div>
+        <button onclick="document.getElementById('ios-install-guide').classList.add('hidden')" class="btn-green" style="margin-top:6px;">Mengerti!</button>
+    </div>
+</div>
+
+<!-- PWA Install Banner (Android/Desktop) -->
+<div id="pwa-banner" class="hidden">
+    <div class="pwa-icon">✍️</div>
+    <div class="pwa-text">
+        <p id="pwa-banner-title">Install NovelConsult</p>
+        <span id="pwa-banner-sub">Tambahkan ke layar beranda kamu</span>
+    </div>
+    <button class="pwa-install-btn" onclick="doPwaInstall()" id="pwa-install-btn">Install</button>
+    <button class="pwa-close-btn" onclick="document.getElementById('pwa-banner').classList.add('hidden')">✕</button>
+</div>
+
 <script>
+// ═══════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════
 let lang = 'id';
 let profileName = localStorage.getItem('nc_name') || '';
+let profilePhotoData = localStorage.getItem('nc_photo') || '';
 let globalIdea = '';
 let globalCount = 5;
 let globalGenre = 'fantasi';
+let deferredPrompt = null;
+let isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
 
-// Chapter emotion chars based on position
-const chapterEmotions = ['😄','😨','😡','😢','🤢','😰','🤩','😤','🥺','😱','✨','💀','🌟','😤','🥰','😭','⚡','🌀','🔥','💫'];
+// ═══════════════════════════════════════════
+// PWA SETUP
+// ═══════════════════════════════════════════
+window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+    if (!localStorage.getItem('nc_pwa_installed')) {
+        setTimeout(() => {
+            document.getElementById('pwa-banner').classList.remove('hidden');
+        }, 3000);
+    }
+});
+window.addEventListener('appinstalled', () => {
+    localStorage.setItem('nc_pwa_installed', '1');
+    document.getElementById('pwa-banner').classList.add('hidden');
+});
 
-// Chapter title templates per genre
+function triggerInstall() {
+    closeProfile();
+    if (isIOS) {
+        document.getElementById('ios-install-guide').classList.remove('hidden');
+    } else if (deferredPrompt) {
+        doPwaInstall();
+    } else {
+        document.getElementById('ios-install-guide').classList.remove('hidden');
+    }
+}
+async function doPwaInstall() {
+    document.getElementById('pwa-banner').classList.add('hidden');
+    if (!deferredPrompt) { document.getElementById('ios-install-guide').classList.remove('hidden'); return; }
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+    if (outcome === 'accepted') localStorage.setItem('nc_pwa_installed','1');
+    deferredPrompt = null;
+}
+
+// ═══════════════════════════════════════════
+// CHAPTER TITLES
+// ═══════════════════════════════════════════
 const chapterTitlesID = {
-    'fantasi': ['Awal yang Tak Terduga','Dunia di Balik Tirai','Kekuatan yang Terbangun','Peta Menuju Kegelapan','Aliansi yang Rapuh','Rahasia Sang Penjaga','Pertempuran Pertama','Kebenaran yang Pahit','Di Ambang Kehancuran','Sumber Kekuatan Sejati','Tipu Daya Sang Musuh','Pengkhianatan','Harapan yang Tersisa','Menuju Benteng Terakhir','Pengorbanan','Fajar Kebangkitan','Pertempuran Puncak','Harga Sebuah Kemenangan','Dunia yang Baru','Epilog: Sebuah Awal Baru'],
-    'romance': ['Pertemuan yang Tak Disengaja','Benci Tapi Rindu','Kata-kata yang Tak Terucap','Momen Kecil yang Berarti','Cemburu itu Bernama...','Pengakuan yang Salah Waktu','Jarak yang Sengaja Diciptakan','Diam-diam Aku Cinta','Salah Paham','Keberanian Mengakui','Luka yang Menyembuhkan','Lebih dari Sekadar Teman','Cinta di Persimpangan','Melepaskan atau Bertahan','Satu Langkah Lebih Dekat','Kejutan Manis','Sayap yang Patah','Ketika Cinta Cukup','Janji Selamanya','Akhir yang Juga Awal'],
-    'thriller': ['Pesan Terakhir','Saksi Mata','Jejak Darah','Tamu Tak Diundang','Kebohongan Berlapis','Orang yang Mati Dua Kali','Foto yang Berbicara','Identitas Palsu','Di Balik Cermin','Waktu Hampir Habis','Jebakan','Suara dari Kegelapan','Kode yang Pecah','Pengkhianat di Antara Kita','Malam Terakhir','Kebenaran yang Membunuh','Pelarian','Penyamaran Sempurna','Konfrontasi','Kebenarannya'],
-    'sci-fi': ['Sinyal Pertama','Mesin Waktu Rusak','Koloni yang Terlupakan','Kecerdasan Buatan yang Sadar','Gerbang Bintang','Mutasi','Perang Antargalaksi','Paradoks','Manusia Terakhir','Teknologi yang Memberontak','Evolusi Paksa','Di Luar Batas','Kontak','Planet Lain','Senjata Pamungkas','Realitas Virtual','Eksperimen Terlarang','Batas Moralitas','Revolusi Mesin','Era Baru'],
-    'drama': ['Keluarga yang Retak','Warisan','Rahasia Keluarga','Konflik Pilihan','Luka Lama','Perpisahan','Tekanan','Antara Dua Dunia','Penerimaan','Perubahan','Anak yang Hilang','Persimpangan Jalan','Harga Ambisi','Beban Masa Lalu','Rekonsiliasi','Pilihan Sulit','Keberanian Berubah','Menemukan Diri','Perdamaian','Babak Baru'],
-    'horor': ['Rumah di Ujung Jalan','Suara di Loteng','Cermin yang Berbohong','Mimpi yang Nyata','Tamu Gelap','Kutukan','Ritual Malam','Mereka yang Kembali','Pesan dari Kubur','Mata yang Mengintai','Pintu Terkunci','Janji Iblis','Kesurupan','Wujud Aslinya','Malam Seribu Arwah','Lorong Tanpa Akhir','Genggaman dari Balik Dunia','Tidak Sendiri','Harga Perjanjian','Akhir yang Mengerikan'],
-    'petualangan': ['Peta Kuno','Perjalanan Dimulai','Jebakan Hutan','Kota yang Terkubur','Kompas Ajaib','Bahaya di Pegunungan','Persekutuan Baru','Tanda Peringatan','Rahasia Pulau','Duel di Tepian Jurang','Penemuan','Mata-Mata','Pertempuran Jalan','Harta yang Terkutuk','Pengkhianatan Kawan','Menuju Inti','Pertahanan Terakhir','Kemenangan Pahit','Pulang','Legenda Baru'],
-    'slice-of-life': ['Pagi yang Biasa','Teman Baru','Rutinitas yang Berubah','Percakapan Penting','Hujan Pertengahan Musim','Kenangan','Hari yang Panjang','Sebuah Keputusan Kecil','Perpisahan Kecil','Kejutan di Tengah Hari','Momen Tenang','Koneksi','Pertumbuhan','Saat-saat Tak Terduga','Apresiasi','Kehilangan Kecil','Kebersamaan','Mimpi Kecil','Esok yang Cerah','Satu Hari Penuh Makna']
+    'fantasi':['Awal yang Tak Terduga','Dunia di Balik Tirai','Kekuatan yang Terbangun','Peta Menuju Kegelapan','Aliansi yang Rapuh','Rahasia Sang Penjaga','Pertempuran Pertama','Kebenaran yang Pahit','Di Ambang Kehancuran','Sumber Kekuatan Sejati','Tipu Daya Sang Musuh','Pengkhianatan','Harapan yang Tersisa','Menuju Benteng Terakhir','Pengorbanan','Fajar Kebangkitan','Pertempuran Puncak','Harga Sebuah Kemenangan','Dunia yang Baru','Epilog: Awal Baru'],
+    'romance':['Pertemuan yang Tak Disengaja','Benci Tapi Rindu','Kata-kata yang Tak Terucap','Momen Kecil yang Berarti','Cemburu itu Bernama...','Pengakuan yang Salah Waktu','Jarak yang Sengaja Diciptakan','Diam-diam Aku Cinta','Salah Paham','Keberanian Mengakui','Luka yang Menyembuhkan','Lebih dari Sekadar Teman','Cinta di Persimpangan','Melepaskan atau Bertahan','Satu Langkah Lebih Dekat','Kejutan Manis','Sayap yang Patah','Ketika Cinta Cukup','Janji Selamanya','Akhir yang Juga Awal'],
+    'thriller':['Pesan Terakhir','Saksi Mata','Jejak Darah','Tamu Tak Diundang','Kebohongan Berlapis','Orang yang Mati Dua Kali','Foto yang Berbicara','Identitas Palsu','Di Balik Cermin','Waktu Hampir Habis','Jebakan','Suara dari Kegelapan','Kode yang Pecah','Pengkhianat di Antara Kita','Malam Terakhir','Kebenaran yang Membunuh','Pelarian','Penyamaran Sempurna','Konfrontasi','Akhirnya Terungkap'],
+    'sci-fi':['Sinyal Pertama','Mesin Waktu Rusak','Koloni yang Terlupakan','AI yang Sadar','Gerbang Bintang','Mutasi','Perang Antargalaksi','Paradoks','Manusia Terakhir','Teknologi Memberontak','Evolusi Paksa','Di Luar Batas','Kontak','Planet Lain','Senjata Pamungkas','Realitas Virtual','Eksperimen Terlarang','Batas Moralitas','Revolusi Mesin','Era Baru'],
+    'drama':['Keluarga yang Retak','Warisan','Rahasia Keluarga','Konflik Pilihan','Luka Lama','Perpisahan','Tekanan','Antara Dua Dunia','Penerimaan','Perubahan','Anak yang Hilang','Persimpangan Jalan','Harga Ambisi','Beban Masa Lalu','Rekonsiliasi','Pilihan Sulit','Keberanian Berubah','Menemukan Diri','Perdamaian','Babak Baru'],
+    'horor':['Rumah di Ujung Jalan','Suara di Loteng','Cermin yang Berbohong','Mimpi yang Nyata','Tamu Gelap','Kutukan','Ritual Malam','Mereka yang Kembali','Pesan dari Kubur','Mata yang Mengintai','Pintu Terkunci','Janji Iblis','Kesurupan','Wujud Aslinya','Malam Seribu Arwah','Lorong Tanpa Akhir','Genggaman dari Balik Dunia','Tidak Sendiri','Harga Perjanjian','Akhir yang Mengerikan'],
+    'petualangan':['Peta Kuno','Perjalanan Dimulai','Jebakan Hutan','Kota yang Terkubur','Kompas Ajaib','Bahaya di Pegunungan','Persekutuan Baru','Tanda Peringatan','Rahasia Pulau','Duel di Tepian Jurang','Penemuan Besar','Mata-Mata','Pertempuran Jalan','Harta Terkutuk','Pengkhianatan Kawan','Menuju Inti','Pertahanan Terakhir','Kemenangan Pahit','Pulang','Legenda Baru'],
+    'slice-of-life':['Pagi yang Biasa','Teman Baru','Rutinitas yang Berubah','Percakapan Penting','Hujan Pertengahan Musim','Kenangan','Hari yang Panjang','Keputusan Kecil','Perpisahan Kecil','Kejutan di Tengah Hari','Momen Tenang','Koneksi','Pertumbuhan','Saat Tak Terduga','Apresiasi','Kehilangan Kecil','Kebersamaan','Mimpi Kecil','Esok yang Cerah','Satu Hari Penuh Makna']
 };
-
 const chapterTitlesEN = {
-    'fantasi': ['An Unexpected Beginning','World Behind the Veil','Awakened Power','Map to Darkness','Fragile Alliance','Secret of the Guardian','First Battle','Bitter Truth','On the Brink of Ruin','Source of True Power','The Enemy\'s Deception','Betrayal','Remaining Hope','Toward the Final Fortress','Sacrifice','Dawn of Revival','The Final Battle','Price of Victory','A New World','Epilogue: A New Beginning'],
-    'romance': ['An Unplanned Meeting','Love-Hate Relationship','Unspoken Words','Small Meaningful Moments','That Thing Called Jealousy','Confession at the Wrong Time','Distance Deliberately Made','Secretly In Love','Misunderstanding','Courage to Confess','A Healing Wound','More Than Friends','Love at a Crossroad','Let Go or Hold On','One Step Closer','Sweet Surprise','Broken Wings','When Love Is Enough','Forever Promise','An End That Is Also a Beginning'],
-    'thriller': ['The Last Message','Eyewitness','Trail of Blood','Uninvited Guest','Layers of Lies','A Man Who Died Twice','The Photo Speaks','False Identity','Behind the Mirror','Time Running Out','The Trap','Voice from Darkness','The Broken Code','Traitor Among Us','Last Night','Truth That Kills','Escape','Perfect Disguise','Confrontation','The Truth'],
-    'sci-fi': ['The First Signal','Broken Time Machine','The Forgotten Colony','A Conscious AI','Star Gate','Mutation','Intergalactic War','Paradox','The Last Human','Rebellious Technology','Forced Evolution','Beyond the Limit','Contact','Another Planet','Ultimate Weapon','Virtual Reality','Forbidden Experiment','Moral Boundaries','Machine Revolution','A New Era'],
-    'drama': ['A Broken Family','The Inheritance','Family Secret','Conflict of Choice','Old Wounds','Farewell','Pressure','Between Two Worlds','Acceptance','Change','The Lost Child','Crossroad','Price of Ambition','Burden of the Past','Reconciliation','Hard Choice','Courage to Change','Finding Oneself','Peace','A New Chapter'],
-    'horor': ['House at the End of the Road','Voice in the Attic','The Lying Mirror','Real Dreams','Dark Guest','The Curse','Night Ritual','Those Who Return','Message from the Grave','Watching Eyes','Locked Door','Devil\'s Promise','Possession','Its True Form','Night of a Thousand Souls','Endless Corridor','Grip from Beyond','Not Alone','Price of the Deal','A Horrifying End'],
-    'petualangan': ['Ancient Map','The Journey Begins','Forest Trap','The Buried City','Magic Compass','Danger in the Mountains','New Alliance','Warning Sign','Island Secret','Duel at the Cliff\'s Edge','The Discovery','Spy','Road Battle','The Cursed Treasure','Friend\'s Betrayal','Into the Core','Last Stand','Bitter Victory','Going Home','New Legend'],
-    'slice-of-life': ['An Ordinary Morning','A New Friend','A Changed Routine','An Important Conversation','Rain in Mid-Season','Memories','A Long Day','A Small Decision','A Small Farewell','Midday Surprise','A Quiet Moment','Connection','Growth','Unexpected Moments','Appreciation','A Small Loss','Togetherness','A Small Dream','A Brighter Tomorrow','One Meaningful Day']
+    'fantasi':['An Unexpected Beginning','World Behind the Veil','Awakened Power','Map to Darkness','Fragile Alliance','Secret of the Guardian','First Battle','Bitter Truth','On the Brink','Source of True Power','The Enemy\'s Deception','Betrayal','Remaining Hope','Final Fortress','Sacrifice','Dawn of Revival','The Final Battle','Price of Victory','A New World','Epilogue: New Beginning'],
+    'romance':['Unplanned Meeting','Love-Hate','Unspoken Words','Small Moments','Jealousy','Confession at Wrong Time','Deliberate Distance','Secretly in Love','Misunderstanding','Courage to Confess','A Healing Wound','More Than Friends','Love at Crossroads','Let Go or Hold On','One Step Closer','Sweet Surprise','Broken Wings','When Love Is Enough','Forever Promise','An End That Is Also a Beginning'],
+    'thriller':['Last Message','Eyewitness','Trail of Blood','Uninvited Guest','Layers of Lies','A Man Who Died Twice','The Photo Speaks','False Identity','Behind the Mirror','Time Running Out','The Trap','Voice from Darkness','Broken Code','Traitor Among Us','Last Night','Truth That Kills','Escape','Perfect Disguise','Confrontation','The Truth'],
+    'sci-fi':['First Signal','Broken Time Machine','Forgotten Colony','Conscious AI','Star Gate','Mutation','Intergalactic War','Paradox','Last Human','Rebellious Tech','Forced Evolution','Beyond the Limit','Contact','Another Planet','Ultimate Weapon','Virtual Reality','Forbidden Experiment','Moral Boundaries','Machine Revolution','New Era'],
+    'drama':['Broken Family','Inheritance','Family Secret','Conflict of Choice','Old Wounds','Farewell','Pressure','Between Two Worlds','Acceptance','Change','Lost Child','Crossroad','Price of Ambition','Burden of the Past','Reconciliation','Hard Choice','Courage to Change','Finding Oneself','Peace','A New Chapter'],
+    'horor':['House at the End','Voice in the Attic','Lying Mirror','Real Dreams','Dark Guest','Curse','Night Ritual','Those Who Return','Message from the Grave','Watching Eyes','Locked Door','Devil\'s Promise','Possession','True Form','Night of Souls','Endless Corridor','Grip from Beyond','Not Alone','Price of the Deal','A Horrifying End'],
+    'petualangan':['Ancient Map','The Journey Begins','Forest Trap','Buried City','Magic Compass','Mountain Danger','New Alliance','Warning Sign','Island Secret','Cliff Duel','The Discovery','Spy','Road Battle','Cursed Treasure','Friend\'s Betrayal','Into the Core','Last Stand','Bitter Victory','Going Home','New Legend'],
+    'slice-of-life':['Ordinary Morning','New Friend','Changed Routine','Important Conversation','Mid-Season Rain','Memories','A Long Day','Small Decision','Small Farewell','Midday Surprise','Quiet Moment','Connection','Growth','Unexpected Moments','Appreciation','Small Loss','Togetherness','Small Dream','Brighter Tomorrow','One Meaningful Day']
 };
 
+const genreIcons = {
+    'fantasi':'🧙','romance':'💕','thriller':'🔪','sci-fi':'🚀','drama':'🎭','horor':'👻','petualangan':'⚔️','slice-of-life':'🌸'
+};
+const chapterMoodColors = ['#FFD700','#E8433C','#64B5F6','#4CAF50','#9C59D1','#FF9800','#F06292','#26C6DA','#8D6E63','#78909C','#AB47BC','#42A5F5','#66BB6A','#FFA726','#EC407A','#29B6F6','#26A69A','#D4E157','#FF7043','#5C6BC0'];
+
+// ═══════════════════════════════════════════
+// TRANSLATIONS
+// ═══════════════════════════════════════════
 const t = {
     id: {
-        tagline:'Bangun outline novel kamu secara mendalam ✨', subHeader:'Deep Narrative Architect',
-        lblIdea:'Premis atau Ide Utama', lblChapters:'Jumlah Bab', lblGenre:'Genre Cerita',
-        btnGenerate:'⚡ Generate Outline Detail', btnBack:'← Kembali',
-        resultLabel:'Master Plot', resultTitle:'Character Bible',
-        generating:'Sedang membangun outline cerita...', hint:'Klik tiap bab untuk lihat detail cerita',
-        chapterPrefix:'BAB', clickHint:'Klik untuk detail ▼',
-        tokohTitle:'👥 Tokoh & Sifat', kejadianTitle:'📖 Rangkaian Kejadian',
-        settingTitle:'🏛️ Setting & Suasana', themeTitle:'💡 Tema & Konflik Bab',
-        profileTitle:'Profil Saya', profileSub:'Ubah nama kamu',
-        lblName:'Nama Kamu', btnSave:'💾 Simpan',
-        namePlaceholder:'Masukkan nama kamu...', alertIdea:'Isi ide ceritanya dulu!',
-        idePlaceholder:'Tuliskan premis atau ide utama ceritamu secara singkat...',
-        btnAI:'✨ Perluas & Analisis dengan AI', btnAILoading:'AI sedang menulis...', aiLabel:'✦ Analisis Mendalam oleh AI',
-        chapterOptions:['5 Bab (Singkat)','10 Bab (Sedang)','20 Bab (Panjang)'],
-        staticEvents: [
-            ['🎬 Babak pembuka bab dimulai dengan suasana yang kuat dan atmosfer yang menarik perhatian pembaca sejak kalimat pertama.', '🔍 Tokoh utama dihadapkan pada situasi yang mendorong mereka untuk mengambil inisiatif baru.', '💬 Terjadi percakapan atau momen penting yang membuka lapisan motivasi lebih dalam.', '⚡ Konflik atau ketegangan bab ini mulai terasa, mengancam tujuan utama tokoh.', '🚪 Titik balik utama bab: keputusan besar diambil yang tidak bisa diurungkan.', '🌀 Bab ditutup dengan cliffhanger atau revelasi mengejutkan yang mendorong pembaca ke bab berikutnya.'],
-        ],
+        tagline:'Bangun outline novel kamu secara mendalam ✨',subHeader:'Deep Narrative Architect',
+        lblIdea:'Premis atau Ide Utama',lblChapters:'Jumlah Bab',lblGenre:'Genre',
+        btnGenerate:'⚡ Generate Outline Detail',btnBack:'← Kembali',
+        resultLabel:'Master Plot',resultTitle:'Character Bible',
+        generating:'Sedang membangun outline cerita...',hint:'Klik tiap bab untuk detail lengkap',
+        chapterPrefix:'BAB',clickHint:'Klik untuk detail ▼',
+        tokohTitle:'👥 Tokoh & Karakter',kejadianTitle:'📖 Rangkaian Kejadian',
+        settingTitle:'🏛️ Setting & Suasana Mendalam',themeTitle:'💡 Tema & Konflik Bab',
+        paceTitle:'⏱️ Pacing & Struktur Narasi',
+        profileTitle:'Profil Saya',profileSub:'Personalisasi akunmu',
+        lblName:'Nama Kamu',btnSave:'💾 Simpan Profil',
+        namePlaceholder:'Masukkan nama kamu...',alertIdea:'Isi ide ceritanya dulu!',
+        idePlaceholder:'Tuliskan premis atau ide utama ceritamu...',
+        btnAI:'✨ Analisis Mendalam AI',btnAILoading:'AI sedang menulis...',aiLabel:'✦ Analisis Mendalam oleh AI',
+        chapterOptions:['5 Bab','10 Bab','20 Bab'],
+        historyTitle:'Histori Ide',historyEmpty:'Belum ada ide yang tersimpan.',
+        historyEmptySub:'Generate outline pertamamu sekarang!',
+        tapPhoto:'Ketuk untuk foto',choosePhoto:'📷 Pilih dari Galeri',
+        installDesc:'Simpan NovelConsult di layar beranda ponselmu!',
+        installBtn:'📲 Install ke Beranda',
+        btnClear:'🗑️ Hapus Semua Histori',
+        synopsisLabel:'📝 Sinopsis Bab',
         aiPrompt: (idea, babKe, total, genre, title) =>
-            `Kamu adalah penulis novel profesional dan editor sastra berpengalaman. Kamu diminta membuat ANALISIS MENDALAM dan DETAIL untuk:\n\nJudul Bab: "${title}"\nBAB ${babKe} dari ${total} bab\nGenre: ${genre}\nPremis novel: "${idea}"\n\nBuat 7 poin yang SANGAT SPESIFIK, PANJANG, dan MENDALAM untuk bab ini. Setiap poin harus minimal 3-4 kalimat. Sertakan:\n1. 🎬 Pembukaan Sinematik - suasana, setting, deskripsi indrawi yang detail\n2. 🧠 Psikologi Tokoh - pikiran, perasaan, motivasi, inner conflict\n3. ⚔️ Konflik Utama Bab - konflik eksternal & internal secara detail\n4. 💬 Dialog & Momen Kunci - adegan dialog penting, apa yang terucap dan tak terucap\n5. 🌪️ Plot Twist atau Kejutan - elemen mengejutkan yang memperkaya cerita\n6. 🔗 Koneksi ke Bab Berikutnya - bagaimana bab ini setup cerita ke depan\n7. ✍️ Saran Teknis Penulisan - gaya bahasa, sudut pandang, tempo narasi yang cocok\n\nGunakan bahasa Indonesia yang hidup, puitis, dan sinematik. Setiap poin harus kaya detail dan langsung relevan dengan premis.\n\nFormat output HANYA sebagai JSON array of strings (tanpa backtick, tanpa penjelasan lain):\n["poin 1 minimal 3-4 kalimat detail", "poin 2 minimal 3-4 kalimat detail", "poin 3...", "poin 4...", "poin 5...", "poin 6...", "poin 7..."]`,
+`Kamu adalah penulis novel profesional dan editor sastra berpengalaman dengan keahlian dalam storytelling sinematik. Buat ANALISIS SANGAT MENDALAM untuk:
+
+Judul Bab: "${title}"
+BAB ${babKe} dari ${total} bab
+Genre: ${genre}
+Premis novel: "${idea}"
+
+Buat TEPAT 7 poin analisis. Setiap poin WAJIB minimal 4-5 kalimat yang PADAT dan SPESIFIK, bukan generik. Langsung relevan dengan premis di atas:
+
+1. 🎬 PEMBUKAAN SINEMATIK: Deskripsikan secara detail bagaimana bab ini dibuka. Suasana indrawi (visual, suara, bau, tekstur), pencahayaan dan cuaca yang mencerminkan mood, kalimat pertama yang memikat, dan transisi dari bab sebelumnya.
+
+2. 🧠 PSIKOLOGI TOKOH: Jelaskan kondisi mental dan emosional tokoh utama di bab ini secara mendalam. Inner monologue mereka, ketakutan dan harapan tersembunyi, bagaimana trauma atau pengalaman masa lalu mempengaruhi keputusan mereka, serta perubahan psikologis yang terjadi selama bab berlangsung.
+
+3. ⚔️ KONFLIK BERLAPIS: Jabarkan konflik eksternal (apa yang terjadi di dunia cerita) dan konflik internal (pergulatan batin tokoh) secara terpisah dan detail. Sebutkan siapa yang berhadapan dengan siapa, apa taruhannya, dan bagaimana tensi meningkat.
+
+4. 💬 DIALOG & MOMEN KUNCI: Gambarkan setidaknya 2 adegan dialog atau momen penting yang harus ada di bab ini. Apa yang diucapkan, apa yang tidak diucapkan, subtext di balik percakapan, dan bagaimana gesture atau ekspresi tokoh memperkuat emosi.
+
+5. 🌪️ PLOT TWIST / REVELASI: Sebutkan elemen mengejutkan atau informasi baru yang terungkap di bab ini. Bagaimana twist ini mengubah pemahaman pembaca tentang cerita, dan dampaknya terhadap tokoh-tokoh.
+
+6. 🔗 SETUP & PAYOFF: Jelaskan apa yang di-setup di bab ini untuk bab-bab berikutnya, clue tersembunyi yang ditanam, dan bagaimana bab ini secara organik mengalir ke bab selanjutnya tanpa terasa dipaksakan.
+
+7. ✍️ TEKNIK NARASI: Berikan saran teknis yang spesifik — sudut pandang (POV) yang ideal, tempo narasi (kapan mempercepat, kapan memperlambat), gaya bahasa dan pilihan diksi yang cocok untuk genre ini, serta panjang ideal bab dalam kata.
+
+Format output HANYA sebagai JSON array of strings (tanpa backtick, tanpa teks lain):
+["poin 1 minimal 4-5 kalimat", "poin 2...", "poin 3...", "poin 4...", "poin 5...", "poin 6...", "poin 7..."]`,
     },
     en: {
-        tagline:'Build your novel outline in depth ✨', subHeader:'Deep Narrative Architect',
-        lblIdea:'Premise or Main Idea', lblChapters:'Number of Chapters', lblGenre:'Story Genre',
-        btnGenerate:'⚡ Generate Detailed Outline', btnBack:'← Back',
-        resultLabel:'Master Plot', resultTitle:'Character Bible',
-        generating:'Building your story outline...', hint:'Click each chapter to see details',
-        chapterPrefix:'CHAPTER', clickHint:'Click for detail ▼',
-        tokohTitle:'👥 Characters & Traits', kejadianTitle:'📖 Plot Events',
-        settingTitle:'🏛️ Setting & Atmosphere', themeTitle:'💡 Theme & Chapter Conflict',
-        profileTitle:'My Profile', profileSub:'Edit your name',
-        lblName:'Your Name', btnSave:'💾 Save',
-        namePlaceholder:'Enter your name...', alertIdea:'Please fill in your story idea first!',
-        idePlaceholder:'Write your premise or main story idea briefly...',
-        btnAI:'✨ Expand & Analyze with AI', btnAILoading:'AI is writing...', aiLabel:'✦ Deep Analysis by AI',
-        chapterOptions:['5 Chapters (Short)','10 Chapters (Medium)','20 Chapters (Long)'],
-        staticEvents: [
-            ['🎬 The chapter opens with a strong atmosphere that grabs the reader\'s attention from the very first sentence.', '🔍 The protagonist faces a situation that pushes them to take new initiative.', '💬 An important conversation or moment reveals deeper layers of character motivation.', '⚡ The chapter\'s main conflict begins to surface, threatening the protagonist\'s goal.', '🚪 The chapter\'s turning point: a major irreversible decision is made.', '🌀 The chapter closes with a cliffhanger or surprising revelation that propels the reader forward.'],
-        ],
+        tagline:'Build your novel outline in depth ✨',subHeader:'Deep Narrative Architect',
+        lblIdea:'Premise or Main Idea',lblChapters:'Number of Chapters',lblGenre:'Genre',
+        btnGenerate:'⚡ Generate Detailed Outline',btnBack:'← Back',
+        resultLabel:'Master Plot',resultTitle:'Character Bible',
+        generating:'Building your story outline...',hint:'Click each chapter to see full details',
+        chapterPrefix:'CHAPTER',clickHint:'Click for detail ▼',
+        tokohTitle:'👥 Characters & Traits',kejadianTitle:'📖 Plot Events',
+        settingTitle:'🏛️ Setting & Deep Atmosphere',themeTitle:'💡 Theme & Chapter Conflict',
+        paceTitle:'⏱️ Pacing & Narrative Structure',
+        profileTitle:'My Profile',profileSub:'Personalize your account',
+        lblName:'Your Name',btnSave:'💾 Save Profile',
+        namePlaceholder:'Enter your name...',alertIdea:'Please fill in your story idea!',
+        idePlaceholder:'Write your premise or main story idea...',
+        btnAI:'✨ Deep AI Analysis',btnAILoading:'AI is writing...',aiLabel:'✦ Deep Analysis by AI',
+        chapterOptions:['5 Chapters','10 Chapters','20 Chapters'],
+        historyTitle:'Idea History',historyEmpty:'No ideas saved yet.',
+        historyEmptySub:'Generate your first outline now!',
+        tapPhoto:'Tap for photo',choosePhoto:'📷 Choose from Gallery',
+        installDesc:'Save NovelConsult on your home screen!',
+        installBtn:'📲 Install to Home Screen',
+        btnClear:'🗑️ Clear All History',
+        synopsisLabel:'📝 Chapter Synopsis',
         aiPrompt: (idea, chapNum, total, genre, title) =>
-            `You are a professional novelist and experienced literary editor. Create a DEEP, DETAILED ANALYSIS for:\n\nChapter Title: "${title}"\nCHAPTER ${chapNum} of ${total} chapters\nGenre: ${genre}\nNovel premise: "${idea}"\n\nCreate 7 HIGHLY SPECIFIC, DETAILED points for this chapter. Each point must be at least 3-4 sentences. Include:\n1. 🎬 Cinematic Opening - atmosphere, setting, sensory details\n2. 🧠 Character Psychology - thoughts, feelings, motivations, inner conflict\n3. ⚔️ Main Chapter Conflict - external & internal conflict in detail\n4. 💬 Key Dialogue & Moments - important dialogue scenes, spoken and unspoken\n5. 🌪️ Plot Twist or Surprise - surprising element that enriches the story\n6. 🔗 Connection to Next Chapter - how this chapter sets up what comes next\n7. ✍️ Technical Writing Tips - writing style, POV, narrative pacing that fits\n\nUse vivid, poetic, cinematic English. Every point must be rich in detail and directly relevant to the premise.\n\nOutput ONLY as a JSON array of strings (no backticks, no extra text):\n["point 1 at least 3-4 detailed sentences", "point 2...", "point 3...", "point 4...", "point 5...", "point 6...", "point 7..."]`,
+`You are a professional novelist and experienced literary editor with expertise in cinematic storytelling. Create a VERY DEEP ANALYSIS for:
+
+Chapter Title: "${title}"
+CHAPTER ${chapNum} of ${total} chapters
+Genre: ${genre}
+Novel premise: "${idea}"
+
+Create EXACTLY 7 analysis points. Each point MUST be at least 4-5 sentences, DENSE and SPECIFIC, not generic. Directly relevant to the premise above:
+
+1. 🎬 CINEMATIC OPENING: Describe in detail how this chapter opens. Sensory atmosphere (visuals, sound, smell, texture), lighting and weather reflecting the mood, the hook first sentence, and transition from the previous chapter.
+
+2. 🧠 CHARACTER PSYCHOLOGY: Explain the protagonist's mental and emotional state in this chapter deeply. Their inner monologue, hidden fears and hopes, how past trauma or experiences affect their decisions, and psychological changes that occur during the chapter.
+
+3. ⚔️ LAYERED CONFLICT: Detail external conflict (what happens in the story world) and internal conflict (the protagonist's inner struggle) separately. Mention who faces whom, what the stakes are, and how tension escalates.
+
+4. 💬 KEY DIALOGUE & MOMENTS: Describe at least 2 important dialogue scenes or moments that must exist in this chapter. What's said, what's unsaid, subtext beneath conversations, and how gestures or expressions reinforce emotion.
+
+5. 🌪️ PLOT TWIST / REVELATION: State the surprising element or new information revealed in this chapter. How this twist changes the reader's understanding of the story, and its impact on the characters.
+
+6. 🔗 SETUP & PAYOFF: Explain what's set up in this chapter for future chapters, hidden clues planted, and how this chapter flows organically into the next without feeling forced.
+
+7. ✍️ NARRATIVE TECHNIQUE: Give specific technical advice — ideal point of view (POV), narrative pacing (when to speed up, when to slow down), writing style and word choices for this genre, and ideal chapter length in words.
+
+Output ONLY as a JSON array of strings (no backticks, no extra text):
+["point 1 at least 4-5 sentences", "point 2...", "point 3...", "point 4...", "point 5...", "point 6...", "point 7..."]`,
     }
 };
 
-updateProfileDisplay();
-applyLang();
+// Setting descriptions per genre
+const settingDescID = {
+    'fantasi': (i,total,title) => `Setting bab "${title}" berlangsung di dunia yang kaya dengan elemen magis dan mitologi. Lanskap yang terbentang bisa berupa hutan purba dengan pohon-pohon setinggi menara, istana dengan arsitektur yang menentang gravitasi, atau reruntuhan peradaban kuno yang menyimpan energi misterius. Cahaya di tempat ini tidak biasa — mungkin bersinar dari dalam kristal, atau bulan kembar yang memancarkan warna berbeda. Aroma dan suara juga asing: harumnya sihir yang seperti tembaga dan petir, suara makhluk yang tidak ada di dunia nyata. Kondisi bab ke-${i} ini mencerminkan arc cerita yang sedang dalam fase ${i/total < 0.3 ? 'pembangunan dunia dan pengenalan aturan magis' : i/total < 0.7 ? 'eksplorasi mendalam dan konflik yang semakin kompleks' : 'klimaks dan puncak kekuatan magis'} — setting pun merefleksikan tensi itu.`,
+    'romance': (i,total,title) => `Bab "${title}" mengambil latar yang intim dan penuh nuansa emosional. Setting dipilih secara cermat untuk mencerminkan dinamika hubungan: bisa berupa kafe sudut jalan yang ramai namun terasa privat bagi dua orang ini, taman saat sore menjelang petang dengan cahaya keemasan yang memperindah ekspresi wajah, atau apartemen sempit yang terasa hangat karena kehadiran mereka berdua. Setiap elemen visual berfungsi sebagai metafora — tanaman layu di sudut ruangan, lagu lama yang tidak sengaja berbunyi, atau hujan yang tiba-tiba turun — semua memperkuat dinamika emosi antara tokoh. Suasana bab ke-${i} ini terasa ${i/total < 0.4 ? 'canggung namun penuh antisipasi dan harapan' : i/total < 0.75 ? 'hangat namun dibayangi ketidakpastian' : 'intens dan penuh keberanian emosional'}.`,
+    'thriller': (i,total,title) => `Setting bab "${title}" dirancang untuk memaksimalkan ketegangan dan paranoia. Ruangan atau lokasi memiliki detail-detail kecil yang terasa salah — pintu yang tidak terkunci padahal seharusnya, bayangan yang bergerak di sudut penglihatan, ponsel yang mati mendadak. Pencahayaan didominasi oleh kontras tajam antara terang dan gelap, menonjolkan wajah-wajah yang menyimpan kebohongan. Suara ambient terasa mengancam: langkah kaki di lantai atas, bisikan di balik dinding, sirine yang jauh namun semakin dekat. Bab ke-${i} dari ${total} bab ini menempatkan tokoh dalam kondisi ${i/total < 0.35 ? 'mulai menyadari ada yang tidak beres di sekitar mereka' : i/total < 0.7 ? 'terperangkap di tengah jaringan kebohongan yang semakin rapat' : 'berpacu dengan waktu di tengah bahaya paling nyata'}.`,
+    'sci-fi': (i,total,title) => `Bab "${title}" menghadirkan lingkungan futuristis yang memadukan keajaiban teknologi dengan kelam eksistensial. Setting bisa berupa stasiun luar angkasa dengan jendela yang memperlihatkan bintang-bintang yang asing, laboratorium steril yang menyembunyikan eksperimen terlarang, atau kota megapolis dengan lapisan-lapisan neon dan kemiskinan di bawahnya. Suara teknologi — dengungan reaktor, ping sistem AI, suara vakum luar angkasa — menciptakan soundscape yang asing namun logis. Di bab ke-${i}, teknologi yang ada bukan hanya latar belakang tetapi menjadi karakter tersendiri: ${i/total < 0.4 ? 'memperkenalkan dunia baru yang mengundang decak kagum' : i/total < 0.72 ? 'mulai menunjukkan celah dan bahaya yang tersembunyi di balik kemajuan' : 'menjadi pusat konflik antara manusia dan ciptaannya'}.`,
+    'drama': (i,total,title) => `Latar bab "${title}" adalah ruang-ruang yang terasa familiar namun menyimpan bobot emosional yang berat. Meja makan keluarga yang penuh bekas noda kenangan, rumah masa kecil yang terasa lebih kecil setelah bertahun-tahun pergi, atau ruang tunggu rumah sakit yang steril namun terasa hangat karena satu genggaman tangan. Detail kecil bicara keras: foto yang dihadapkan ke tembok, kursi yang tidak ada penghuninya, cangkir kopi yang sudah dingin. Suasana bab ke-${i} ini terasa ${i/total < 0.3 ? 'tenang di permukaan dengan tekanan yang menggemuruh di bawah' : i/total < 0.65 ? 'tegang dengan ledakan emosi yang mungkin pecah kapan saja' : 'katarsis dan pencerahan — emosi yang akhirnya mendapat ruang untuk bernapas'}.`,
+    'horor': (i,total,title) => `Setting bab "${title}" adalah ruang yang telah berubah menjadi sesuatu yang tidak seharusnya. Setiap sudut menyimpan potensi ancaman: lemari yang bergetar perlahan tanpa alasan, cermin yang memantulkan gambar sepersekian detik lebih lambat, koridor yang entah kenapa terasa lebih panjang dari semua kali sebelumnya. Udara terasa berat dan dingin dengan cara yang berbeda dari sekadar suhu — seperti ada yang mengisap kehangatan dari dalam. Suara-suara yang seharusnya familiar (derit kayu, tiupan angin) terdengar seperti komunikasi dari sesuatu yang lain. Intensitas horror di bab ke-${i} berada di level ${Math.min(Math.round((i/total)*10), 10)}/10 — ${i/total < 0.3 ? 'membangun atmosfer dan rasa tidak nyaman yang merayap' : i/total < 0.65 ? 'menampilkan manifestasi nyata dari teror' : 'puncak kengerian yang tidak bisa lagi dihindari'}.`,
+    'petualangan': (i,total,title) => `Bab "${title}" membawa pembaca ke lanskap yang megah dan berbahaya sekaligus. Setting petualangan selalu lebih dari sekadar latar — ia adalah tantangan aktif: tebing yang harus dipanjat dengan tangan yang sudah berdarah, hutan yang labirin alaminya mencoba menelan kelompok, atau reruntuhan kuil dengan jebakan yang masih aktif setelah ribuan tahun. Skala visual selalu mengesankan dan menginspirasi rasa kecil sekaligus keberanian. Cuaca dan kondisi alam bukan sekadar deskripsi — mereka adalah hambatan nyata. Di bab ke-${i} dari ${total}, geografis yang dihadapi mencerminkan ${i/total < 0.35 ? 'awal perjalanan dengan tantangan yang mempersiapkan tokoh' : i/total < 0.7 ? 'jantung petualangan dengan bahaya yang sesungguhnya' : 'ujian akhir yang hanya bisa dilewati dengan semua yang telah dipelajari'}.`,
+    'slice-of-life': (i,total,title) => `Latar bab "${title}" adalah keseharian yang terasa hidup dan hangat. Keindahan slice-of-life ada pada detail yang membumi: warung kopi pagi hari dengan aroma biji kopi yang baru digiling, koridor sekolah yang berisik saat istirahat, atau taman dekat rumah saat sore menjelang malam. Tidak ada yang dramatis tentang setting ini — namun justru itulah kekuatannya. Setiap elemen kecil dipenuhi dengan kemungkinan koneksi manusiawi: bangku yang selalu diisi orang yang sama setiap pagi, kucing liar yang hanya mendekat pada seseorang tertentu. Di bab ke-${i}, suasana terasa ${i/total < 0.4 ? 'segar dan penuh potensi pertemuan baru' : i/total < 0.75 ? 'nyaman dengan riak-riak kecil yang mengubah keseharian' : 'reflektif dan bermakna, menangkap esensi dari perjalanan karakter'}.`,
+};
 
+const settingDescEN = {
+    'fantasi': (i,total,title) => `Chapter "${title}" takes place in a world rich with magical elements and mythology. The landscape might be ancient forests with tower-tall trees, palaces with gravity-defying architecture, or ruins of ancient civilizations pulsing with mysterious energy. Light behaves unusually — perhaps glowing from within crystals, or twin moons casting different colors. Sounds and scents are alien: magic smells like copper and lightning, and creatures make sounds unknown to the real world. Chapter ${i}'s setting reflects the story arc currently in a phase of ${i/total < 0.3 ? 'world-building and establishing magical rules' : i/total < 0.7 ? 'deep exploration and escalating complex conflict' : 'climax and peak magical power'}.`,
+    'romance': (i,total,title) => `Chapter "${title}" is set in an intimate, emotionally nuanced location chosen to mirror the relationship dynamics. It might be a busy corner café that feels private to just these two, a park at dusk with golden light flattering their expressions, or a small apartment that feels warm because of their presence. Every visual element serves as metaphor — a wilting plant, a random old song, sudden rain. The atmosphere in chapter ${i} feels ${i/total < 0.4 ? 'awkward yet full of anticipation and hope' : i/total < 0.75 ? 'warm but shadowed by uncertainty' : 'intense and filled with emotional courage'}.`,
+    'thriller': (i,total,title) => `Chapter "${title}"'s setting is engineered to maximize tension and paranoia. Small details feel wrong — a door unlocked when it shouldn't be, a shadow moving at the edge of vision, a phone suddenly dying. Lighting contrasts sharply between bright and dark, highlighting faces hiding lies. Ambient sounds feel threatening: footsteps upstairs, whispers through walls, a siren approaching. Chapter ${i} of ${total} places characters in a state of ${i/total < 0.35 ? 'beginning to realize something is wrong around them' : i/total < 0.7 ? 'trapped within a tightening web of lies' : 'racing against time amid the most real danger yet'}.`,
+    'sci-fi': (i,total,title) => `Chapter "${title}" presents a futuristic environment blending technological wonder with existential darkness. The setting might be a space station with windows revealing unfamiliar star formations, a sterile lab concealing forbidden experiments, or a megacity with neon layers above and poverty below. Tech sounds — reactor hums, AI pings, space vacuum — create a soundscape that feels alien yet logical. In chapter ${i}, the technology isn't just backdrop but becomes a character itself: ${i/total < 0.4 ? 'introducing the new world with awe' : i/total < 0.72 ? 'revealing hidden dangers beneath progress' : 'becoming the core conflict between humanity and its creations'}.`,
+    'drama': (i,total,title) => `Chapter "${title}" unfolds in spaces that feel familiar yet carry immense emotional weight. The family dining table full of memory stains, a childhood home that feels smaller after years away, or a hospital waiting room sterile yet warmed by a single held hand. Small details speak loudly: a photo turned to face the wall, an empty chair, a cup of cold coffee. The atmosphere of chapter ${i} feels ${i/total < 0.3 ? 'calm on the surface with rumbling pressure beneath' : i/total < 0.65 ? 'tense with emotions that could erupt at any moment' : 'cathartic and enlightening — emotions finally given space to breathe'}.`,
+    'horor': (i,total,title) => `Chapter "${title}" is set in spaces that have become something they shouldn't be. Every corner holds potential threat: a slowly trembling wardrobe with no reason, a mirror that reflects a fraction of a second too slowly, a corridor that somehow feels longer than ever before. The air feels heavy and cold in a way beyond temperature — as if something is draining warmth from within. Familiar sounds (creaking wood, wind) sound like communication from something else. Horror intensity in chapter ${i} is at level ${Math.min(Math.round((i/total)*10), 10)}/10 — ${i/total < 0.3 ? 'building atmosphere and creeping unease' : i/total < 0.65 ? 'manifesting real terror' : 'the peak of horror that can no longer be avoided'}.`,
+    'petualangan': (i,total,title) => `Chapter "${title}" takes readers to landscapes that are simultaneously magnificent and dangerous. Adventure settings are more than backdrop — they are active challenges: cliffs to be climbed with bleeding hands, forests that serve as natural labyrinths, or temple ruins with traps still active after millennia. The visual scale is always impressive, inspiring both smallness and bravery. Weather and nature are real obstacles, not decorations. In chapter ${i} of ${total}, the geography reflects ${i/total < 0.35 ? 'the journey\'s beginning, challenges that prepare the characters' : i/total < 0.7 ? 'the heart of the adventure with real danger' : 'the final test that can only be passed with all that has been learned'}.`,
+    'slice-of-life': (i,total,title) => `Chapter "${title}" is set in everyday life that feels alive and warm. Slice-of-life's beauty lies in grounded details: a morning café with freshly ground coffee aroma, a noisy school corridor during break, or a park near home at dusk. Nothing is dramatic about the setting — and that's precisely its power. Every small element is full of human connection possibility: a bench always occupied by the same person, a stray cat that only approaches one specific person. In chapter ${i}, the atmosphere feels ${i/total < 0.4 ? 'fresh and full of new connection potential' : i/total < 0.75 ? 'comfortable with small ripples changing the everyday' : 'reflective and meaningful, capturing the essence of character journey'}.`,
+};
+
+// ═══════════════════════════════════════════
+// HISTORY
+// ═══════════════════════════════════════════
+function getHistory() {
+    try { return JSON.parse(localStorage.getItem('nc_history') || '[]'); } catch { return []; }
+}
+function saveToHistory(idea, genre, count) {
+    const h = getHistory();
+    const entry = { id: Date.now(), idea, genre, count, date: new Date().toLocaleDateString('id-ID', {day:'numeric',month:'short',year:'numeric'}) };
+    h.unshift(entry);
+    const trimmed = h.slice(0, 30);
+    localStorage.setItem('nc_history', JSON.stringify(trimmed));
+}
+function renderHistory() {
+    const tx = t[lang];
+    const h = getHistory();
+    const list = document.getElementById('history-list');
+    const empty = document.getElementById('history-empty');
+    const clearBtn = document.getElementById('btn-clear-history');
+    list.innerHTML = '';
+    if (h.length === 0) {
+        empty.style.display = 'block';
+        clearBtn.style.display = 'none';
+        return;
+    }
+    empty.style.display = 'none';
+    clearBtn.style.display = 'block';
+    h.forEach(entry => {
+        const card = document.createElement('div');
+        card.className = 'history-card';
+        const icon = genreIcons[entry.genre] || '📖';
+        card.innerHTML = `
+            <div class="history-card-icon" style="background:${chapterMoodColors[Math.floor(Math.random()*5)]}22;border:2px solid ${chapterMoodColors[0]}44;">${icon}</div>
+            <div style="flex:1;min-width:0;">
+                <p style="font-weight:900;font-size:0.82rem;color:var(--dark);line-height:1.4;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;">${entry.idea}</p>
+                <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:5px;">
+                    <span class="info-tag" style="font-size:9px;">${icon} ${entry.genre}</span>
+                    <span class="info-tag" style="font-size:9px;">${entry.count} bab</span>
+                    <span class="info-tag" style="font-size:9px;">📅 ${entry.date}</span>
+                </div>
+            </div>
+            <button onclick="loadFromHistory('${entry.id}')" style="background:var(--purple);color:white;border:none;border-radius:999px;padding:6px 12px;font-family:'Nunito',sans-serif;font-size:0.7rem;font-weight:900;cursor:pointer;flex-shrink:0;">▶ Buka</button>
+        `;
+        list.appendChild(card);
+    });
+}
+function loadFromHistory(id) {
+    const h = getHistory();
+    const entry = h.find(e => e.id == id);
+    if (!entry) return;
+    document.getElementById('user-idea').value = entry.idea;
+    document.getElementById('genre-select').value = entry.genre;
+    document.getElementById('total-chapters').value = entry.count;
+    showPage('page-home');
+    setTimeout(() => generateOutline(), 100);
+}
+function clearHistory() {
+    if (!confirm('Hapus semua histori ide?')) return;
+    localStorage.removeItem('nc_history');
+    renderHistory();
+}
+
+// ═══════════════════════════════════════════
+// NAVIGATION
+// ═══════════════════════════════════════════
+function showPage(id) {
+    document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    window.scrollTo({top:0,behavior:'instant'});
+    if (id === 'page-history') renderHistory();
+}
+function goHome() { showPage('page-home'); }
+
+// ═══════════════════════════════════════════
+// LANG
+// ═══════════════════════════════════════════
 function toggleLang() {
     lang = lang === 'id' ? 'en' : 'id';
     document.getElementById('btn-id').classList.toggle('active', lang==='id');
@@ -435,58 +764,51 @@ function toggleLang() {
 }
 function applyLang() {
     const tx = t[lang];
-    const ids = {
+    const map = {
         'txt-tagline':tx.tagline,'txt-sub-header':tx.subHeader,'lbl-idea':tx.lblIdea,
         'lbl-chapters':tx.lblChapters,'btn-generate':tx.btnGenerate,'btn-back':tx.btnBack,
-        'txt-result-label':tx.resultLabel,'txt-result-title':tx.resultTitle,
+        'btn-back-history':tx.btnBack,'txt-result-label':tx.resultLabel,'txt-result-title':tx.resultTitle,
         'txt-generating':tx.generating,'txt-hint':tx.hint,'txt-profile-title':tx.profileTitle,
-        'txt-profile-sub':tx.profileSub,'lbl-name':tx.lblName,'btn-save-name':tx.btnSave
+        'txt-profile-sub':tx.profileSub,'lbl-name':tx.lblName,'btn-save-name':tx.btnSave,
+        'txt-history-title':tx.historyTitle,'txt-history-empty':tx.historyEmpty,
+        'txt-history-empty-sub':tx.historyEmptySub,'txt-tap-photo':tx.tapPhoto,
+        'btn-choose-photo':tx.choosePhoto,'txt-install-desc':tx.installDesc,
+        'btn-install-home':tx.installBtn,'btn-clear-history':tx.btnClear,
     };
-    for (const [id,val] of Object.entries(ids)) { const el=document.getElementById(id); if(el) el.textContent=val; }
-    const lblGenreEl = document.getElementById('lbl-genre');
-    if(lblGenreEl) lblGenreEl.textContent = tx.lblGenre;
+    for (const [id,val] of Object.entries(map)) { const el=document.getElementById(id); if(el) el.textContent=val; }
+    const lblG = document.getElementById('lbl-genre'); if(lblG) lblG.textContent = tx.lblGenre;
     document.getElementById('profile-name-input').placeholder = tx.namePlaceholder;
     document.getElementById('user-idea').placeholder = tx.idePlaceholder;
     const sel = document.getElementById('total-chapters');
-    for (let i=0;i<sel.options.length;i++) sel.options[i].text = tx.chapterOptions[i];
+    for (let i=0;i<sel.options.length;i++) if(tx.chapterOptions[i]) sel.options[i].text = tx.chapterOptions[i];
     document.documentElement.lang = lang;
 }
 
-function showPage(id) {
-    document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-    document.getElementById(id).classList.add('active');
-    window.scrollTo({top:0,behavior:'instant'});
-}
-function goHome() { showPage('page-home'); }
-
-function getChapterTitle(idx, genre, langKey) {
-    const titles = langKey === 'id' ? chapterTitlesID : chapterTitlesEN;
-    const list = titles[genre] || titles['fantasi'];
-    return list[(idx-1) % list.length];
-}
-
-function getStaticEvents(tx) {
-    return tx.staticEvents[0];
-}
-
+// ═══════════════════════════════════════════
+// GENERATE OUTLINE
+// ═══════════════════════════════════════════
 function generateOutline() {
     const idea = document.getElementById('user-idea').value.trim();
     const count = parseInt(document.getElementById('total-chapters').value);
     const genre = document.getElementById('genre-select').value;
-    if (!idea) return alert(t[lang].alertIdea);
+    if (!idea) { alert(t[lang].alertIdea); return; }
     globalIdea = idea;
     globalCount = count;
     globalGenre = genre;
-
+    saveToHistory(idea, genre, count);
     showPage('page-result');
-    const preview = document.getElementById('result-idea-preview');
-    preview.textContent = idea.length > 50 ? idea.substring(0,50)+'...' : idea;
-
+    document.getElementById('result-idea-preview').textContent = idea.length > 55 ? idea.substring(0,55)+'...' : idea;
     document.getElementById('loading-state').style.display = 'flex';
     const chDiv = document.getElementById('display-chapters');
     chDiv.style.display = 'none';
     chDiv.innerHTML = '';
     setTimeout(() => buildChapters(idea, count, genre), 900);
+}
+
+function getChapterTitle(idx, genre, langKey) {
+    const titles = langKey === 'id' ? chapterTitlesID : chapterTitlesEN;
+    const list = titles[genre] || titles['fantasi'];
+    return list[(idx-1) % list.length];
 }
 
 function buildChapters(idea, count, genre) {
@@ -496,76 +818,129 @@ function buildChapters(idea, count, genre) {
 
     for (let i=1; i<=count; i++) {
         const chTitle = getChapterTitle(i, genre, lang);
-        const emotion = chapterEmotions[(i-1) % chapterEmotions.length];
-        const staticEvts = getStaticEvents(tx);
+        const moodColor = chapterMoodColors[(i-1) % chapterMoodColors.length];
+        const conflictLevel = Math.min(Math.round((i / count) * 10), 10);
+        const wordEst = Math.floor(1400 + i * 220);
+        const pageEst = Math.round(wordEst / 250);
+
+        // Setting description
+        const settingDescs = lang === 'id' ? settingDescID : settingDescEN;
+        const settingFn = settingDescs[genre] || settingDescs['fantasi'];
+        const settingText = settingFn(i, count, chTitle);
+
+        // Static events
+        const staticEvts = lang === 'id' ? [
+            `🎬 Babak pembuka bab ini dibangun dengan atmosfer kuat yang menarik perhatian sejak kalimat pertama. Pembaca langsung dilemparkan ke dalam kondisi emosional tokoh tanpa perlu transisi yang panjang, menciptakan efek sinematik yang immediat.`,
+            `🔍 Tokoh utama dihadapkan pada situasi baru yang memaksa mereka keluar dari zona nyaman. Ini bukan sekadar peristiwa plot — ini adalah momen yang mendefinisikan ulang siapa mereka dan apa yang benar-benar mereka inginkan.`,
+            `💬 Terjadi percakapan atau momen diam yang bermakna — di mana subtext lebih keras dari dialog yang sebenarnya. Apa yang tidak diucapkan, tatapan yang terlalu lama, atau senyum yang tidak menjangkau mata menjadi narasi tersendiri.`,
+            `⚡ Konflik dan tekanan bab ini mencapai puncak lokal — sebuah keputusan, tindakan, atau revelasi mengubah arah cerita secara permanen dan tidak dapat diurungkan.`,
+            `🌀 Bab ditutup dengan cara yang membuat pembaca tidak bisa berhenti membaca — entah cliffhanger, revelasi yang mengguncang, atau momen emosional yang dalam dan resonan.`,
+        ] : [
+            `🎬 This chapter's opening is built with a strong atmosphere that grabs attention from the first sentence. Readers are immediately placed in the protagonist's emotional state without a long transition, creating an instant cinematic effect.`,
+            `🔍 The protagonist faces a new situation that forces them out of their comfort zone. This isn't just a plot event — it's a defining moment that reframes who they are and what they truly want.`,
+            `💬 A meaningful conversation or silent moment occurs — where subtext speaks louder than actual dialogue. What's unsaid, a gaze that lingers too long, or a smile that doesn't reach the eyes becomes its own narrative.`,
+            `⚡ The chapter's conflict and pressure reaches a local peak — a decision, action, or revelation permanently and irreversibly changes the story's direction.`,
+            `🌀 The chapter closes in a way that makes readers unable to stop — whether a cliffhanger, a groundbreaking revelation, or a deep, resonant emotional moment.`,
+        ];
 
         const div = document.createElement('div');
         div.className = 'chapter-card';
         div.id = `chapter-${i}`;
 
+        // Chapter mascot SVG based on mood
+        const mascotSVGs = [
+            // Joy
+            `<svg width="38" height="46" viewBox="0 0 60 80"><ellipse cx="30" cy="32" rx="22" ry="26" fill="#FFD700"/><circle cx="21" cy="28" r="4" fill="white"/><circle cx="21" cy="28" r="2.5" fill="#1a0a3b"/><circle cx="39" cy="28" r="4" fill="white"/><circle cx="39" cy="28" r="2.5" fill="#1a0a3b"/><path d="M20 40 Q30 50 40 40" stroke="#1a0a3b" stroke-width="3" stroke-linecap="round" fill="none"/><ellipse cx="30" cy="10" rx="14" ry="8" fill="#7ED321"/></svg>`,
+            // Anger
+            `<svg width="36" height="44" viewBox="0 0 60 75"><rect x="8" y="14" width="44" height="42" rx="12" fill="#E8433C"/><circle cx="21" cy="34" r="4" fill="white"/><circle cx="21" cy="34" r="2.5" fill="#1a0a3b"/><circle cx="39" cy="34" r="4" fill="white"/><circle cx="39" cy="34" r="2.5" fill="#1a0a3b"/><path d="M22 46 Q30 40 38 46" stroke="white" stroke-width="2.5" stroke-linecap="round" fill="none"/><path d="M13 18 L22 24 M47 18 L38 24" stroke="#FF6B35" stroke-width="3" stroke-linecap="round"/></svg>`,
+            // Sadness
+            `<svg width="36" height="44" viewBox="0 0 60 80"><ellipse cx="30" cy="32" rx="22" ry="26" fill="#64B5F6"/><circle cx="21" cy="30" r="4" fill="white"/><circle cx="21" cy="30" r="2.2" fill="#1a0a3b"/><circle cx="39" cy="30" r="4" fill="white"/><circle cx="39" cy="30" r="2.2" fill="#1a0a3b"/><path d="M20 44 Q30 36 40 44" stroke="#1a0a3b" stroke-width="2.5" stroke-linecap="round" fill="none"/><rect x="22" y="56" width="16" height="22" rx="8" fill="#90CAF9"/></svg>`,
+            // Fear
+            `<svg width="34" height="46" viewBox="0 0 60 80"><ellipse cx="30" cy="35" rx="18" ry="28" fill="#9C59D1"/><circle cx="22" cy="32" r="5" fill="white"/><circle cx="22" cy="32" r="3" fill="#1a0a3b"/><circle cx="38" cy="32" r="5" fill="white"/><circle cx="38" cy="32" r="3" fill="#1a0a3b"/><path d="M22 46 Q30 42 38 46" stroke="#1a0a3b" stroke-width="2.5" stroke-linecap="round" fill="none"/><path d="M24 12 Q26 4 30 8 Q34 2 36 10" stroke="#B39DDB" stroke-width="2" fill="none" stroke-linecap="round"/></svg>`,
+            // Disgust
+            `<svg width="36" height="46" viewBox="0 0 60 80"><ellipse cx="30" cy="34" rx="20" ry="26" fill="#4CAF50"/><circle cx="21" cy="30" r="4" fill="white"/><circle cx="21" cy="30" r="2.5" fill="#1a0a3b"/><circle cx="39" cy="30" r="4" fill="white"/><circle cx="39" cy="30" r="2.5" fill="#1a0a3b"/><path d="M22 44 Q30 38 38 44" stroke="#1a0a3b" stroke-width="2.5" stroke-linecap="round" fill="none"/><path d="M14 24 Q18 18 26 22 M34 22 Q42 18 46 24" stroke="#388E3C" stroke-width="2.5" fill="none" stroke-linecap="round"/></svg>`,
+        ];
+        const mascotSVG = mascotSVGs[(i-1) % mascotSVGs.length];
+
         const staticHTML = staticEvts.map(e =>
-            `<div class="detail-event">${e}</div>`
+            `<div style="background:#FAF5FF;border-radius:1rem;padding:11px 14px;font-size:0.79rem;font-weight:700;color:var(--dark);line-height:1.72;margin-bottom:8px;border-left:3px solid #C4B5E8;">${e}</div>`
         ).join('');
 
-        const conflictLevel = Math.min(Math.round((i / count) * 10), 10);
-        const wordEst = Math.floor(1200 + i * 180);
-        const pageEst = Math.round(wordEst / 250);
+        const safeTitle = chTitle.replace(/'/g,"\\'").replace(/"/g,'&quot;');
 
         div.innerHTML = `
             <div style="padding:1.25rem;" onclick="toggleChapter(${i}, event)">
                 <div style="display:flex;align-items:center;justify-content:space-between;">
                     <div style="display:flex;align-items:center;gap:10px;">
-                        <span style="font-size:2rem;animation:floatUpDown 3s ease-in-out infinite;animation-delay:${i*0.2}s;">${emotion}</span>
+                        <div style="animation:floatChar${(i%3)+1} ${3+i*0.3}s ease-in-out infinite;animation-delay:${i*0.15}s;flex-shrink:0;">
+                            ${mascotSVG}
+                        </div>
                         <div>
                             <span class="chapter-num-badge" id="badge-${i}">${tx.chapterPrefix} ${i}</span>
                             <p class="chapter-title-text">${chTitle}</p>
                         </div>
                     </div>
-                    <span style="font-size:10px;font-weight:800;color:#C4B5E8;">${tx.clickHint}</span>
+                    <span style="font-size:10px;font-weight:800;color:#C4B5E8;flex-shrink:0;">${tx.clickHint}</span>
                 </div>
 
                 <div class="detail-content" id="detail-${i}">
                     <!-- Synopsis -->
-                    <div class="synopsis-block" style="margin-bottom:10px;">
-                        <div style="font-size:9px;font-weight:900;color:var(--purple);letter-spacing:0.2em;text-transform:uppercase;margin-bottom:6px;">📝 Sinopsis Bab</div>
-                        Bab ini membawa pembaca ke momen penting dalam perjalanan cerita "${idea.substring(0,40)}...". Setiap elemen yang dibangun di bab-bab sebelumnya mulai berkonvergensi, menciptakan ketegangan yang terasa nyata dan keputusan yang mengubah arah plot secara signifikan.
+                    <div style="background:linear-gradient(135deg,#F5F3FF,#EDE9FA);border-radius:1rem;padding:13px 15px;font-size:0.79rem;font-weight:700;color:var(--dark);line-height:1.78;border-left:4px solid var(--purple);margin-bottom:12px;">
+                        <div style="font-size:9px;font-weight:900;color:var(--purple);letter-spacing:0.18em;text-transform:uppercase;margin-bottom:6px;">${tx.synopsisLabel}</div>
+                        ${lang==='id'
+                            ? `Bab "${chTitle}" adalah momen penting dalam perjalanan cerita dengan premis "${idea.substring(0,45)}...". Setiap benang cerita yang dianyam di bab-bab sebelumnya mulai menunjukkan polanya, sementara konflik yang menggeliat semakin mendapat bentuk yang nyata dan personal bagi tokoh utama.`
+                            : `Chapter "${chTitle}" is a pivotal moment in the story journey. Every thread woven in previous chapters begins showing its pattern, while the brewing conflict takes increasingly real and personal shape for the protagonist.`
+                        }
                     </div>
 
-                    <!-- Tokoh -->
+                    <!-- Characters -->
                     <div style="margin-bottom:1rem;">
                         <span class="pill-label pill-purple">${tx.tokohTitle}</span>
                         <div style="display:flex;flex-direction:column;gap:8px;">
-                            <div style="background:#F5F3FF;border-radius:1rem;padding:12px;border-left:4px solid var(--purple);">
-                                <p style="font-weight:900;color:var(--purple);font-size:0.8rem;">😄 ${lang==='id'?'Tokoh Utama':'Main Character'}</p>
-                                <p style="font-size:0.75rem;color:#6B7280;margin-top:3px;font-weight:700;">${lang==='id'?'Terdorong oleh rasa ingin tahu yang kuat, namun dibayangi keraguan dan ketakutan yang nyata.':'Driven by a burning curiosity, yet shadowed by real doubt and fear.'}</p>
+                            <div style="background:#F5F3FF;border-radius:1rem;padding:12px 14px;border-left:4px solid var(--purple);display:flex;align-items:flex-start;gap:8px;">
+                                <svg width="28" height="34" viewBox="0 0 60 80" style="flex-shrink:0;"><ellipse cx="30" cy="32" rx="22" ry="26" fill="#FFD700"/><circle cx="21" cy="28" r="3.5" fill="white"/><circle cx="39" cy="28" r="3.5" fill="white"/><path d="M20 40 Q30 50 40 40" stroke="#1a0a3b" stroke-width="3" stroke-linecap="round" fill="none"/></svg>
+                                <div><p style="font-weight:900;color:var(--purple);font-size:0.8rem;">${lang==='id'?'Tokoh Utama':'Main Character'}</p><p style="font-size:0.75rem;color:#6B7280;margin-top:3px;font-weight:700;line-height:1.6;">${lang==='id'?'Terdorong oleh rasa ingin tahu yang kuat dan ambisi tersembunyi. Di bab ini, mereka harus menghadapi sisi diri yang selama ini dihindari — kekuatan sekaligus kelemahan yang paling fundamental.':'Driven by burning curiosity and hidden ambition. In this chapter, they must face a part of themselves long avoided — their most fundamental strength and weakness.'}</p></div>
                             </div>
-                            <div style="background:#F0FDF0;border-radius:1rem;padding:12px;border-left:4px solid var(--green);">
-                                <p style="font-weight:900;color:#3D7A00;font-size:0.8rem;">😡 ${lang==='id'?'Antagonis / Penghalang':'Antagonist / Obstacle'}</p>
-                                <p style="font-size:0.75rem;color:#6B7280;margin-top:3px;font-weight:700;">${lang==='id'?'Dingin dan manipulatif, memiliki agenda tersembunyi yang baru akan terungkap di bab ini.':'Cold and manipulative, with a hidden agenda that begins to reveal itself this chapter.'}</p>
+                            <div style="background:#F0FDF0;border-radius:1rem;padding:12px 14px;border-left:4px solid var(--green);display:flex;align-items:flex-start;gap:8px;">
+                                <svg width="28" height="34" viewBox="0 0 60 75" style="flex-shrink:0;"><rect x="8" y="14" width="44" height="42" rx="12" fill="#E8433C"/><circle cx="21" cy="34" r="4" fill="white"/><circle cx="39" cy="34" r="4" fill="white"/><path d="M13 18 L22 24 M47 18 L38 24" stroke="#FF6B35" stroke-width="3" stroke-linecap="round"/></svg>
+                                <div><p style="font-weight:900;color:#3D7A00;font-size:0.8rem;">${lang==='id'?'Antagonis / Penghalang':'Antagonist / Obstacle'}</p><p style="font-size:0.75rem;color:#6B7280;margin-top:3px;font-weight:700;line-height:1.6;">${lang==='id'?'Memiliki agenda tersembunyi yang kompleks dan motivasi yang secara mengejutkan terasa masuk akal jika dilihat dari perspektifnya. Tidak sepenuhnya jahat — justru itulah yang membuatnya menarik.':'Possesses a complex hidden agenda with surprisingly logical motivations from their own perspective. Not entirely evil — which is precisely what makes them compelling.'}</p></div>
                             </div>
-                            <div style="background:#FFF7ED;border-radius:1rem;padding:12px;border-left:4px solid #F97316;">
-                                <p style="font-weight:900;color:#C2410C;font-size:0.8rem;">🥺 ${lang==='id'?'Karakter Pendukung':'Supporting Character'}</p>
-                                <p style="font-size:0.75rem;color:#6B7280;margin-top:3px;font-weight:700;">${lang==='id'?'Kehadirannya menjadi cermin bagi tokoh utama, memaksa refleksi mendalam.':'Their presence serves as a mirror for the protagonist, forcing deep reflection.'}</p>
+                            <div style="background:#FFF7ED;border-radius:1rem;padding:12px 14px;border-left:4px solid #F97316;display:flex;align-items:flex-start;gap:8px;">
+                                <svg width="28" height="34" viewBox="0 0 60 80" style="flex-shrink:0;"><ellipse cx="30" cy="35" rx="18" ry="28" fill="#9C59D1"/><circle cx="22" cy="32" r="4.5" fill="white"/><circle cx="38" cy="32" r="4.5" fill="white"/></svg>
+                                <div><p style="font-weight:900;color:#C2410C;font-size:0.8rem;">${lang==='id'?'Karakter Pendukung':'Supporting Character'}</p><p style="font-size:0.75rem;color:#6B7280;margin-top:3px;font-weight:700;line-height:1.6;">${lang==='id'?'Kehadirannya bukan sekadar pelengkap — ia adalah cermin yang memaksa tokoh utama merefleksikan pilihan dan nilai-nilai mereka secara lebih jujur dari yang mereka inginkan.':'Their presence is more than filler — they\'re a mirror that forces the protagonist to reflect on their choices and values more honestly than they\'d like.'}</p></div>
                             </div>
                         </div>
                     </div>
 
                     <!-- Info tags -->
                     <div class="info-row">
-                        <span class="info-tag">📍 ${lang==='id'?'Setting':'Setting'}: Bab ${i}</span>
-                        <span class="info-tag green">🎭 ${lang==='id'?'Konflik':'Conflict'}: ${conflictLevel}/10</span>
-                        <span class="info-tag">📄 ~${pageEst} ${lang==='id'?'halaman':'pages'}</span>
+                        <span class="info-tag">🎭 ${lang==='id'?'Genre':'Genre'}: ${genreIcons[genre]} ${genre}</span>
+                        <span class="info-tag green">⚡ ${lang==='id'?'Konflik':'Conflict'}: ${conflictLevel}/10</span>
+                        <span class="info-tag orange">📄 ~${pageEst} ${lang==='id'?'hal':'pages'}</span>
                         <span class="info-tag">✏️ ~${wordEst.toLocaleString()} ${lang==='id'?'kata':'words'}</span>
                     </div>
 
-                    <!-- Setting & Theme -->
+                    <!-- SETTING & ATMOSPHERE (DETAILED) -->
                     <div style="margin-bottom:1rem;">
                         <span class="pill-label pill-blue">${tx.settingTitle}</span>
-                        <div class="detail-event" style="border-left-color:#3B82F6;">
-                            ${lang==='id'
-                                ? `Bab ${i} berlangsung di lingkungan yang mencerminkan kondisi batin tokoh utama. Atmosfer ${conflictLevel > 7 ? 'tegang dan mencekam' : conflictLevel > 4 ? 'penuh ketidakpastian' : 'tenang namun menyimpan misteri'}, dengan detail visual dan sensorik yang memperkuat tema bab ini.`
-                                : `Chapter ${i} takes place in an environment that mirrors the protagonist's inner state. The atmosphere is ${conflictLevel > 7 ? 'tense and ominous' : conflictLevel > 4 ? 'full of uncertainty' : 'calm but hiding mystery'}, with visual and sensory details that reinforce this chapter's theme.`
-                            }
+                        <div style="background:linear-gradient(135deg,#EFF6FF,#DBEAFE);border-radius:1rem;padding:14px 15px;font-size:0.8rem;font-weight:700;color:var(--dark);line-height:1.82;border-left:4px solid #3B82F6;margin-bottom:8px;">
+                            ${settingText}
+                        </div>
+                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+                            <div style="background:#F8F4FF;border-radius:0.85rem;padding:10px 12px;border:2px solid #E0D9F7;">
+                                <p style="font-size:8px;font-weight:900;color:var(--purple);text-transform:uppercase;letter-spacing:0.15em;margin-bottom:4px;">🌤 ${lang==='id'?'Cuaca & Cahaya':'Weather & Light'}</p>
+                                <p style="font-size:0.73rem;font-weight:700;color:#4B5563;line-height:1.55;">${lang==='id'
+                                    ? `${conflictLevel > 7 ? 'Langit mendung dengan cahaya merah senja — simbolis dan mengancam.' : conflictLevel > 4 ? 'Berawan dengan sesekali cahaya menembus — ketidakpastian visual.' : 'Cahaya pagi yang hangat, bayangan yang masih panjang — optimisme dengan catatan.'}`
+                                    : `${conflictLevel > 7 ? 'Overcast sky with blood-red dusk — symbolic and threatening.' : conflictLevel > 4 ? 'Cloudy with occasional light breaking through — visual uncertainty.' : 'Warm morning light, still-long shadows — optimism with a note of caution.'}`
+                                }</p>
+                            </div>
+                            <div style="background:#F0FFF4;border-radius:0.85rem;padding:10px 12px;border:2px solid #BBF7D0;">
+                                <p style="font-size:8px;font-weight:900;color:#166534;text-transform:uppercase;letter-spacing:0.15em;margin-bottom:4px;">🔊 ${lang==='id'?'Suara & Tekstur':'Sound & Texture'}</p>
+                                <p style="font-size:0.73rem;font-weight:700;color:#4B5563;line-height:1.55;">${lang==='id'
+                                    ? `${conflictLevel > 7 ? 'Sunyi yang menyiksa diselingi suara mengagetkan — tension akustik.' : conflictLevel > 4 ? 'Suara latar yang tidak bisa diabaikan — dunia memperingatkan tokoh.' : 'Suara kehidupan sehari-hari yang familiar — fondasi rasa aman yang rapuh.'}`
+                                    : `${conflictLevel > 7 ? 'Agonizing silence punctuated by startling sounds — acoustic tension.' : conflictLevel > 4 ? 'Background sounds that can\'t be ignored — the world warning the character.' : 'Familiar everyday sounds — a fragile foundation of safety.'}`
+                                }</p>
+                            </div>
                         </div>
                     </div>
 
@@ -575,20 +950,31 @@ function buildChapters(idea, count, genre) {
                         ${staticHTML}
                     </div>
 
-                    <!-- Theme -->
+                    <!-- Theme & Conflict -->
                     <div style="margin-bottom:1rem;">
                         <span class="pill-label pill-orange">${tx.themeTitle}</span>
-                        <div class="detail-event" style="border-left-color:#F97316;">
+                        <div style="background:linear-gradient(135deg,#FFF7ED,#FFEDD5);border-radius:1rem;padding:13px 15px;font-size:0.8rem;font-weight:700;color:var(--dark);line-height:1.78;border-left:4px solid #F97316;">
                             ${lang==='id'
-                                ? `Tema sentral bab ini adalah ${conflictLevel > 7 ? 'pengorbanan dan identitas' : conflictLevel > 4 ? 'kepercayaan dan pengkhianatan' : 'penemuan dan harapan'}. Konflik internal tokoh utama mencapai puncak baru, sementara konflik eksternal semakin kompleks dan berlapis.`
-                                : `The central theme of this chapter is ${conflictLevel > 7 ? 'sacrifice and identity' : conflictLevel > 4 ? 'trust and betrayal' : 'discovery and hope'}. The protagonist's internal conflict reaches a new peak while external conflict grows more complex.`
+                                ? `Tema sentral bab "${chTitle}" adalah <strong>${conflictLevel > 7 ? 'pengorbanan, identitas, dan harga sebuah kebenaran' : conflictLevel > 4 ? 'kepercayaan, pengkhianatan, dan kompleksitas loyalitas' : 'penemuan diri, harapan, dan keberanian mengambil langkah pertama'}</strong>. Konflik internal tokoh utama — pergulatan antara apa yang mereka inginkan versus apa yang benar — mencapai intensitas baru di bab ini. Sementara itu, konflik eksternal menawarkan tekanan dari luar yang memaksa keputusan tidak bisa lagi ditunda. Kombinasi keduanya menciptakan momen yang akan terus membekas bagi pembaca.`
+                                : `The central theme of chapter "${chTitle}" is <strong>${conflictLevel > 7 ? 'sacrifice, identity, and the price of truth' : conflictLevel > 4 ? 'trust, betrayal, and the complexity of loyalty' : 'self-discovery, hope, and the courage to take the first step'}</strong>. The protagonist's internal conflict — the struggle between what they want versus what is right — reaches new intensity here. Meanwhile, external conflict offers outside pressure that forces decisions that can no longer be delayed. Both combined create a moment readers won't soon forget.`
                             }
                         </div>
                     </div>
 
-                    <!-- AI expand button -->
+                    <!-- Pacing -->
+                    <div style="margin-bottom:1rem;">
+                        <span class="pill-label pill-teal">${tx.paceTitle}</span>
+                        <div style="background:linear-gradient(135deg,#F0FDFA,#CCFBF1);border-radius:1rem;padding:13px 15px;font-size:0.8rem;font-weight:700;color:var(--dark);line-height:1.78;border-left:4px solid #14B8A6;">
+                            ${lang==='id'
+                                ? `Bab ke-${i} dari ${count} ini memiliki ritme ${i/count < 0.25 ? 'yang lebih lambat dan eksploratif — ruang untuk membangun dunia dan empati tokoh' : i/count < 0.5 ? 'sedang dengan akselerasi di pertengahan — pembaca mulai merasakan tarikan cerita' : i/count < 0.8 ? 'cepat dengan sedikit ruang napas — setiap adegan langsung berdampak' : 'sangat cepat dan intens — teknik short sentences, paragraf pendek, dan aksi yang langsung'}. Idealnya bab ini ditulis dalam ${pageEst}-${pageEst+3} halaman (estimasi ${wordEst.toLocaleString()}-${(wordEst+500).toLocaleString()} kata). Sudut pandang yang disarankan: ${genre === 'thriller' || genre === 'horor' ? 'Orang Pertama (aku/saya) untuk efek ketegangan maksimal' : genre === 'fantasi' || genre === 'petualangan' ? 'Orang Ketiga Terbatas untuk panorama dunia yang lebih luas' : 'Orang Ketiga Intim untuk kedalaman emosi dan akses pikiran tokoh'}.`
+                                : `Chapter ${i} of ${count} has a ${i/count < 0.25 ? 'slow, exploratory rhythm — room for world-building and character empathy' : i/count < 0.5 ? 'medium pace with mid-chapter acceleration — readers start feeling the story\'s pull' : i/count < 0.8 ? 'fast pace with little breathing room — every scene directly impacts the story' : 'very fast and intense — short sentences, brief paragraphs, direct action'} pace. Ideally written in ${pageEst}-${pageEst+3} pages (~${wordEst.toLocaleString()}-${(wordEst+500).toLocaleString()} words). Recommended POV: ${genre === 'thriller' || genre === 'horor' ? 'First Person (I) for maximum tension' : genre === 'fantasi' || genre === 'petualangan' ? 'Third Person Limited for broader world panorama' : 'Close Third Person for emotional depth and character mind access'}.`
+                            }
+                        </div>
+                    </div>
+
+                    <!-- AI button -->
                     <div id="ai-area-${i}">
-                        <button class="btn-ai" id="ai-btn-${i}" onclick="generateAI(${i}, event, '${chTitle.replace(/'/g,"\\'")}')">✨ ${tx.btnAI}</button>
+                        <button class="btn-ai" id="ai-btn-${i}" onclick="generateAI(${i}, event, '${safeTitle}')">✨ ${tx.btnAI}</button>
                     </div>
                 </div>
             </div>
@@ -603,88 +989,143 @@ function buildChapters(idea, count, genre) {
 }
 
 function toggleChapter(i, event) {
-    if (event.target.closest('.btn-ai')) return;
+    if (event.target.closest('.btn-ai') || event.target.tagName === 'BUTTON') return;
     const detail = document.getElementById(`detail-${i}`);
     const card   = document.getElementById(`chapter-${i}`);
     detail.classList.toggle('open');
     card.classList.toggle('open');
 }
 
+// ═══════════════════════════════════════════
+// AI GENERATE
+// ═══════════════════════════════════════════
 async function generateAI(chapNum, event, chTitle) {
     event.stopPropagation();
     const tx = t[lang];
     const btn = document.getElementById(`ai-btn-${chapNum}`);
     const area = document.getElementById(`ai-area-${chapNum}`);
-
     btn.disabled = true;
-    btn.innerHTML = `<span class="spin"></span> ${tx.btnAILoading}`;
+    btn.innerHTML = `<span style="display:inline-block;width:12px;height:12px;border:2px solid rgba(255,255,255,0.3);border-top-color:white;border-radius:50%;animation:spin 0.7s linear infinite;"></span> ${tx.btnAILoading}`;
 
     try {
         const response = await fetch("https://api.anthropic.com/v1/messages", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                model: "claude-sonnet-4-20250514",
-                max_tokens: 1000,
-                messages: [{
-                    role: "user",
-                    content: tx.aiPrompt(globalIdea, chapNum, globalCount, globalGenre, chTitle)
-                }]
+            method:"POST",
+            headers:{"Content-Type":"application/json"},
+            body:JSON.stringify({
+                model:"claude-sonnet-4-20250514",
+                max_tokens:1000,
+                messages:[{role:"user",content:tx.aiPrompt(globalIdea,chapNum,globalCount,globalGenre,chTitle)}]
             })
         });
-
         const data = await response.json();
-        const rawText = data.content?.find(b => b.type === 'text')?.text || '[]';
-
+        const rawText = data.content?.find(b=>b.type==='text')?.text || '[]';
         let points = [];
-        try {
-            const clean = rawText.replace(/```json|```/g, '').trim();
-            points = JSON.parse(clean);
-        } catch {
-            points = rawText.split('\n').filter(l => l.trim().length > 10).slice(0, 7);
-        }
+        try { const clean = rawText.replace(/```json|```/g,'').trim(); points = JSON.parse(clean); }
+        catch { points = rawText.split('\n').filter(l=>l.trim().length>10).slice(0,7); }
 
         const icons = ['🎬','🧠','⚔️','💬','🌪️','🔗','✍️'];
-        const labels = lang === 'id'
-            ? ['Pembukaan Sinematik','Psikologi Tokoh','Konflik Utama','Dialog & Momen Kunci','Plot Twist / Kejutan','Koneksi ke Bab Berikut','Saran Teknis Penulisan']
-            : ['Cinematic Opening','Character Psychology','Main Conflict','Key Dialogue & Moments','Plot Twist / Surprise','Connection to Next Chapter','Technical Writing Tips'];
+        const labels = lang==='id'
+            ? ['Pembukaan Sinematik','Psikologi Tokoh','Konflik Berlapis','Dialog & Momen Kunci','Plot Twist / Revelasi','Setup & Payoff','Teknik Narasi']
+            : ['Cinematic Opening','Character Psychology','Layered Conflict','Key Dialogue & Moments','Plot Twist / Revelation','Setup & Payoff','Narrative Technique'];
 
-        const pointsHTML = points.map((p, idx) =>
+        const pointsHTML = points.map((p,idx) =>
             `<div class="ai-point">
-                <div style="font-size:9px;color:var(--green);font-weight:900;letter-spacing:0.15em;text-transform:uppercase;margin-bottom:5px;">${icons[idx]||'•'} ${labels[idx]||''}</div>
+                <div class="ai-point-label">${icons[idx]||'•'} ${labels[idx]||''}</div>
                 ${p}
             </div>`
         ).join('');
 
         area.innerHTML = `
             <div class="ai-output">
-                <div class="ai-label">
-                    <span style="width:8px;height:8px;background:var(--green);border-radius:50%;display:inline-block;"></span>
-                    ${tx.aiLabel}
-                </div>
+                <div class="ai-label"><span style="width:8px;height:8px;background:var(--green);border-radius:50%;display:inline-block;"></span>${tx.aiLabel}</div>
                 ${pointsHTML}
-            </div>
-        `;
-
-    } catch (err) {
+            </div>`;
+    } catch(err) {
+        const safeTitle = chTitle.replace(/'/g,"\\'");
         area.innerHTML = `
             <div style="background:#FEF2F2;border-radius:1rem;padding:10px 14px;font-size:0.78rem;font-weight:700;color:#DC2626;border:2px solid #FECACA;">
                 ⚠️ ${lang==='id'?'Gagal generate. Coba lagi nanti.':'Failed to generate. Please try again.'}
             </div>
-            <button class="btn-ai" style="margin-top:8px;" onclick="generateAI(${chapNum}, event, '${chTitle.replace(/'/g,"\\'")}')">🔄 ${lang==='id'?'Coba Lagi':'Retry'}</button>
-        `;
+            <button class="btn-ai" style="margin-top:8px;" onclick="generateAI(${chapNum},event,'${safeTitle}')">🔄 ${lang==='id'?'Coba Lagi':'Retry'}</button>`;
     }
 }
 
-// Profile
-function openProfile() { document.getElementById('profile-name-input').value=profileName; updateModalInitials(profileName); document.getElementById('profile-modal').classList.add('open'); }
+// ═══════════════════════════════════════════
+// PROFILE
+// ═══════════════════════════════════════════
+function openProfile() {
+    document.getElementById('profile-name-input').value = profileName;
+    updateModalInitials(profileName);
+    if (profilePhotoData) {
+        document.getElementById('modal-photo-preview').src = profilePhotoData;
+        document.getElementById('modal-photo-preview').style.display = 'block';
+        document.getElementById('photo-placeholder').style.display = 'none';
+    } else {
+        document.getElementById('modal-photo-preview').style.display = 'none';
+        document.getElementById('photo-placeholder').style.display = 'flex';
+        document.getElementById('photo-placeholder').style.flexDirection = 'column';
+        document.getElementById('photo-placeholder').style.alignItems = 'center';
+    }
+    document.getElementById('profile-modal').classList.add('open');
+}
 function closeProfile() { document.getElementById('profile-modal').classList.remove('open'); }
 function closeProfileIfOutside(e) { if(e.target===document.getElementById('profile-modal')) closeProfile(); }
 function previewName() { updateModalInitials(document.getElementById('profile-name-input').value); }
-function saveName() { profileName=document.getElementById('profile-name-input').value.trim(); localStorage.setItem('nc_name',profileName); updateProfileDisplay(); closeProfile(); }
-function updateProfileDisplay() { document.getElementById('profile-initials').textContent=getInitials(profileName)||'?'; }
-function updateModalInitials(name) { document.getElementById('modal-initials').textContent=getInitials(name)||'?'; }
-function getInitials(name) { if(!name)return''; const p=name.trim().split(/\s+/); return p.length>=2?(p[0][0]+p[1][0]).toUpperCase():name.substring(0,2).toUpperCase(); }
+function saveName() {
+    profileName = document.getElementById('profile-name-input').value.trim();
+    localStorage.setItem('nc_name', profileName);
+    updateProfileDisplay();
+    closeProfile();
+}
+function updateProfileDisplay() {
+    const initEl = document.getElementById('profile-initials');
+    const photoNav = document.getElementById('profile-photo-nav');
+    if (profilePhotoData) {
+        photoNav.src = profilePhotoData;
+        photoNav.style.display = 'block';
+        initEl.style.display = 'none';
+    } else {
+        photoNav.style.display = 'none';
+        initEl.style.display = 'block';
+        initEl.textContent = getInitials(profileName) || '?';
+    }
+}
+function updateModalInitials(name) {
+    document.getElementById('modal-initials').textContent = getInitials(name) || '?';
+}
+function getInitials(name) {
+    if (!name) return '';
+    const p = name.trim().split(/\s+/);
+    return p.length >= 2 ? (p[0][0]+p[1][0]).toUpperCase() : name.substring(0,2).toUpperCase();
+}
+
+function handlePhotoUpload(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        profilePhotoData = e.target.result;
+        localStorage.setItem('nc_photo', profilePhotoData);
+        document.getElementById('modal-photo-preview').src = profilePhotoData;
+        document.getElementById('modal-photo-preview').style.display = 'block';
+        document.getElementById('photo-placeholder').style.display = 'none';
+        updateProfileDisplay();
+    };
+    reader.readAsDataURL(file);
+}
+
+// ═══════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════
+updateProfileDisplay();
+applyLang();
+
+// Service Worker for PWA
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('sw.js').catch(() => {});
+    });
+}
 </script>
 </body>
 </html>
